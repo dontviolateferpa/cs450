@@ -97,8 +97,16 @@ def main():
         print "{0:.2f}".format(num_stars)
     
     random_movies = get_movie_data()
+    np.set_printoptions(suppress=True)
     
     for movie in random_movies:
         print movie
-
+        
+    num_rows = random_movies.shape[0]
+    num_cols = random_movies.shape[1]
+    
+    print(random_movies.shape)
+    print("Rows", num_rows)
+    print("Cols", num_cols)
+    
 main()

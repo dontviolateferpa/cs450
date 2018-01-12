@@ -1,3 +1,6 @@
+from random import Random
+import numpy as np
+
 class movie:
     title = str()
     year = int()
@@ -20,18 +23,104 @@ class movie:
 
 def create_movie_list():
     """"""
-    movieList = []
+    movie_list = []
 
-    for x in range (0, 4):
-        movieList.append(movie("blah " + str(x), 2000 + x, x))
+    for x in range (0, 5):
+        movie_list.append(movie("blah " + str(x), 2000 + x, x * 60))
 
-    return movieList
+    return movie_list
+
+def create_list_of_long_movies(movies):
+    """"""
+    long_movie_list = []
+
+    for movie in movies:
+        if movie.runtime > 150:
+            long_movie_list.append(movie)
+    
+    return long_movie_list
+
+def get_movie_data():
+    """
+    Generate a numpy array of movie data
+    :return:
+    """
+    num_movies = 10
+    array = np.zeros([num_movies, 3], dtype=np.float)
+
+    random = Random()
+
+    for i in range(num_movies):
+        # There is nothing magic about 100 here, just didn't want ids
+        # to match the row numbers
+        movie_id = i + 100
+        
+        # Lets have the views range from 100-10000
+        views = random.randint(100, 10000)
+        stars = random.uniform(0, 5)
+
+        array[i][0] = movie_id
+        array[i][1] = views
+        array[i][2] = stars
+
+    return array
 
 def main():
-    """"""""
-    thisMovieList = create_movie_list()
+    """"""
+    # create list of movies
+    movie_list = create_movie_list()
 
-    for x in thisMovieList:
-        print(x)
+    # print movie list
+    for movie in movie_list:
+        print(movie)
+
+    print()
+
+    # make list of long movies
+    long_movie_list = create_list_of_long_movies(movie_list)
+
+    for movie in long_movie_list:
+        print(movie)
+    
+    movies_stars_map = {}
+
+    random = Random()
+
+    for movie in movie_list:
+        num_stars = random.uniform(0, 5)
+
+        movies_stars_map[movie.title] = num_stars
+    
+    for movie_title in movies_stars_map:
+        num_stars = movies_stars_map[movie_title]
+        
+        print "{0:.2f}".format(num_stars)
+    
+    random_movies = get_movie_data()
+    np.set_printoptions(suppress=True)
+    
+    for movie in random_movies:
+        print movie
+        
+    num_rows = random_movies.shape[0]
+    num_cols = random_movies.shape[1]
+    
+    print(random_movies.shape)
+    print("Rows", num_rows)
+    print("Cols", num_cols)
+    
+    top_two_rows = random_movies[:2]
+    
+    for row in top_two_rows:
+        print row
+        
+    last_two_cols = random_movies[:, -2:]
+    
+    for col in last_two_cols:
+        print col
+    
+    mid_col = random_movies[:,1]
+    
+    print mid_col
 
 main()

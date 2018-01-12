@@ -118,5 +118,9 @@ def main():
     
     for col in last_two_cols:
         print col
+    
+    mid_col = random_movies[:,1]
+    
+    print mid_col
 
 main()

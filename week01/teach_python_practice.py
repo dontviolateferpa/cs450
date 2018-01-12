@@ -109,9 +109,14 @@ def main():
     print("Rows", num_rows)
     print("Cols", num_cols)
     
-    top_two = random_movies[:2]
+    top_two_rows = random_movies[:2]
     
-    for row in top_two:
+    for row in top_two_rows:
         print row
+        
+    last_two_cols = random_movies[:, -2:]
     
+    for col in last_two_cols:
+        print col
+
 main()

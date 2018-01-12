@@ -1,3 +1,6 @@
+from random import Random
+import numpy
+
 class movie:
     title = str()
     year = int()
@@ -20,18 +23,47 @@ class movie:
 
 def create_movie_list():
     """"""
-    movieList = []
+    movie_list = []
 
-    for x in range (0, 4):
-        movieList.append(movie("blah " + str(x), 2000 + x, x))
+    for x in range (0, 5):
+        movie_list.append(movie("blah " + str(x), 2000 + x, x * 60))
 
-    return movieList
+    return movie_list
+
+def create_list_of_long_movies(movies):
+    """"""
+    long_movie_list = []
+
+    for movie in movies:
+        if movie.runtime > 150:
+            long_movie_list.append(movie)
+    
+    return long_movie_list
 
 def main():
-    """"""""
-    thisMovieList = create_movie_list()
+    """"""
+    # create list of movies
+    movie_list = create_movie_list()
 
-    for x in thisMovieList:
-        print(x)
+    # print movie list
+    for movie in movie_list:
+        print(movie)
+
+    print()
+
+    # make list of long movies
+    long_movie_list = create_list_of_long_movies(movie_list)
+
+    for movie in long_movie_list:
+        print(movie)
+    
+    movies_stars_map = {}
+
+    random = Random()
+    
+    for movie in movie_list:
+        num_stars = random.uniform(0, 5)
+
+        movies_stars_map[movie.title] = num_stars
 
 main()

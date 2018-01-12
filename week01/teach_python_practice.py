@@ -60,10 +60,15 @@ def main():
     movies_stars_map = {}
 
     random = Random()
-    
+
     for movie in movie_list:
         num_stars = random.uniform(0, 5)
 
         movies_stars_map[movie.title] = num_stars
+    
+    for movie_title in movies_stars_map:
+        num_stars = movies_stars_map[movie_title]
+        
+        print "{0:.2f}".format(num_stars)
 
 main()

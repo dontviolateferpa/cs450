@@ -1,5 +1,5 @@
 from random import Random
-import numpy
+import numpy as np
 
 class movie:
     title = str()
@@ -40,6 +40,31 @@ def create_list_of_long_movies(movies):
     
     return long_movie_list
 
+def get_movie_data():
+    """
+    Generate a numpy array of movie data
+    :return:
+    """
+    num_movies = 10
+    array = np.zeros([num_movies, 3], dtype=np.float)
+
+    random = Random()
+
+    for i in range(num_movies):
+        # There is nothing magic about 100 here, just didn't want ids
+        # to match the row numbers
+        movie_id = i + 100
+        
+        # Lets have the views range from 100-10000
+        views = random.randint(100, 10000)
+        stars = random.uniform(0, 5)
+
+        array[i][0] = movie_id
+        array[i][1] = views
+        array[i][2] = stars
+
+    return array
+
 def main():
     """"""
     # create list of movies
@@ -70,5 +95,10 @@ def main():
         num_stars = movies_stars_map[movie_title]
         
         print "{0:.2f}".format(num_stars)
+    
+    random_movies = get_movie_data()
+    
+    for movie in random_movies:
+        print movie
 
 main()

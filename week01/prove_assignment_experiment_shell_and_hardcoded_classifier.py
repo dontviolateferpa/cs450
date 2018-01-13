@@ -1,6 +1,7 @@
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
+import difflib
 
 iris = datasets.load_iris()
 
@@ -18,3 +19,12 @@ data_train, data_test, targets_train, targets_test = train_test_split(iris.data,
 classifier = GaussianNB()
 
 model = classifier.fit(data_train, targets_train)
+
+targets_predicted = model.predict(data_test)
+
+print targets_predicted
+print ""
+print targets_test
+
+sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
+print "The two are " + str(sm.ratio()) + " percent similar" 

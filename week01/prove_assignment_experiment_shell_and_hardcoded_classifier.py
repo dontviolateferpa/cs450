@@ -3,6 +3,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 import difflib
 
+class HardCodedClassifier:
+    """
+    The Hard Coded Classifier
+    """
+
+    def fit(self, data_train, targets_train):
+        """
+        Fit the data
+        """
+        return self
+
+    def predict(self, data_test):
+        targets_predicted = []
+
+        for x in data_test:
+            targets_predicted.append(0)
+
+        return targets_predicted
+
 iris = datasets.load_iris()
 
 # Show the data (the attributes of each instance)
@@ -27,4 +46,11 @@ print ""
 print targets_test
 
 sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
-print "The two are " + str(sm.ratio()) + " percent similar" 
+print "The two are " + str(sm.ratio()) + " percent similar"
+
+classifier = HardCodedClassifier()
+hard_model = classifier.fit(data_train, targets_train)
+targets_predicted = hard_model.predict(data_test)
+
+sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
+print "The two are " + str(sm.ratio()) + " percent similar"

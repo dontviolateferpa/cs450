@@ -1,7 +1,9 @@
 import numpy as np
 from numpy import genfromtxt
 from sklearn import datasets
+from sklearn import svm
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 import difflib
 
@@ -46,7 +48,9 @@ print "Iris Target Names"
 print(iris.target_names)
 print ""
 
+clf = svm.SVC(kernel='linear', C=1)
 data_train, data_test, targets_train, targets_test = train_test_split(iris.data, iris.target, test_size=0.3, train_size=0.7)
+scores = cross_val_score(clf, iris.data, iris.target, cv=5)
 
 classifier = GaussianNB()
 
@@ -67,3 +71,6 @@ targets_predicted = hard_model.predict(data_test)
 
 sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
 print "The two are " + str(sm.ratio()) + " percent similar"
+
+print "Scores:"
+print scores

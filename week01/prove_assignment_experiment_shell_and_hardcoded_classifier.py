@@ -32,6 +32,8 @@ iris = datasets.load_iris()
 print "Iris Data"
 print(iris.data)
 print ""
+
+# above and beyond to save and load data to and from a CSV file
 np.savetxt("iris-data.csv", iris.data, delimiter=",")
 iris_csv_data = genfromtxt('iris-data.csv', delimiter=',')
 print "Iris CSV data"
@@ -48,8 +50,11 @@ print "Iris Target Names"
 print(iris.target_names)
 print ""
 
+# above and beyond for cross validation
 clf = svm.SVC(kernel='linear', C=1)
 data_train, data_test, targets_train, targets_test = train_test_split(iris.data, iris.target, test_size=0.3, train_size=0.7)
+
+# obtain scores from cross validation
 scores = cross_val_score(clf, iris.data, iris.target, cv=5)
 
 classifier = GaussianNB()

@@ -1,4 +1,5 @@
 import argparse
+import difflib
 import numpy as np
 from numpy import genfromtxt
 from sklearn import datasets
@@ -6,7 +7,7 @@ from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
-import difflib
+from sklearn.neighbors import KNeighborsClassifier
 
 class HardCodedClassifier:
     """
@@ -74,6 +75,11 @@ def print_data_set(data_set):
     print(data_set.target_names)
     print ""
 
+def display_similarity(predictions, targets_test, method):
+    """"""
+    sm=difflib.SequenceMatcher(None, predictions, targets_test)
+    print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
+
 def main():
     """main"""
     args = receive_args().parse_args()
@@ -97,15 +103,19 @@ def main():
     print ""
     print targets_test
 
-    sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
-    print "The two are " + str(sm.ratio()) + " percent similar"
+    display_similarity(targets_predicted, targets_test, "gaussian")
 
     classifier = HardCodedClassifier()
     hard_model = classifier.fit(data_train, targets_train)
     targets_predicted = hard_model.predict(data_test)
 
-    sm=difflib.SequenceMatcher(None, targets_predicted, targets_test)
-    print "The two are " + str(sm.ratio()) + " percent similar"
+    display_similarity(targets_predicted, targets_test, "hard coded")
+
+    classifier = KNeighborsClassifier(n_neighbors=3)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "k-nearest neighbors")
 
     print "Scores:"
     print scores

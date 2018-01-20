@@ -2,6 +2,7 @@ import argparse
 import difflib
 import numpy as np
 from numpy import genfromtxt
+from numpy.linalg import norm
 from sklearn import datasets
 from sklearn import svm
 from sklearn.model_selection import train_test_split
@@ -27,6 +28,84 @@ class HardCodedClassifier:
             targets_predicted.append(0)
 
         return targets_predicted
+
+class MyKNearestClassifier:
+    """
+    My implementation of the k-nearest neighbors classifier.
+    """
+
+    _k = None
+
+    def __init__(self, k):
+        self._k = k
+
+    def fit(self, data_train, targets_train):
+        """
+        Fit the data
+        """
+        
+        return KModel(self._k, data_train, targets_train)
+
+class KModel:
+    """
+    A model with data and a predict method
+    """
+    _k = None
+    _data_train = None
+    _targets_train = None
+
+    def __init__(self, k, data_train, targets_train):
+        """
+        Put data in the model
+        """
+        self._k = k
+        self._data_train = data_train
+        self._targets_train = targets_train
+
+    def predict(self, data_test):
+        """
+        Make a prediction
+        """
+        #    compute Euclidean distance for each point in data_train
+        #        store euc_distance data_train pair into new array (we need a new array for each element in data_train)
+        #        take the top k of that new array and see which class occurs the most
+        #    have separate array for targets_predict, store decided class into that array
+        # we are making predictions where we want the 
+
+        targets_predict = []
+
+        # we want to compute the nearest neighbors of data_test
+        for point_x in data_test:
+            nns = []
+            y_count = 0
+            for point_y in self._data_train:
+                # compute euc distance
+                dist = np.linalg.norm(point_x - point_y)
+                nns.append([dist, self._targets_train[y_count]])
+                y_count = y_count + 1
+            nns = sorted(nns)
+            nn = self._compute_nn(nns)
+            targets_predict.append(nn)
+
+        # this will have to be the same length as targets_test
+        return targets_predict
+
+    def _compute_nn(self, nns):
+        """
+        Compute the nearest neighbor
+        """
+        top_k = nns[:self._k]
+        k_classes = get_col(top_k, 1)
+        nn = None
+        frequency = 0
+        for x in k_classes:
+            if k_classes.count(x) >= frequency:
+                frequency = k_classes.count(x)
+                nn = x
+        return nn
+
+def get_col(arr, col):
+    return map(lambda x : x[col], arr)
 
 def receive_args():
     """pass arguments to the script"""
@@ -117,11 +196,14 @@ def main():
 
     display_similarity(predictions, targets_test, "k-nearest neighbors")
 
+    classifier = MyKNearestClassifier(3)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors")
+    
     print "Scores:"
     print scores
-
-    print "iris"
-    print(iris)
 
     # classifier = KNearest
     # model = ... (which consists of just storing the data and the value for k-nearest neighbors)

@@ -109,6 +109,7 @@ def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
     parser.add_argument('--csv_file', dest='csv_file', action='store', default=None)
+    parser.add_argument('--save_file', dest='save_file', action='store', default=None)
 
     return parser
 
@@ -121,8 +122,11 @@ def load_data_set():
 def load_data_set_from_csv(file_name):
     """load the dataset from a csv"""
     # above and beyond to save (commented out) and load data to and from a CSV file
-    # np.savetxt("iris-data.csv", iris.data, delimiter=",")
     iris_csv_data = genfromtxt(file_name, delimiter=',')
+
+def save_csv(file_name):
+    """save a csv file"""
+    np.savetxt(file_name, iris.data, delimiter=",")
 
 def choose_data_set(args):
     """choose the dataset based on args passed"""
@@ -202,5 +206,8 @@ def main():
     
     print "Scores:"
     print scores
+
+    if args.save_file != None:
+        save_csv(args.save_file)
 
 main()

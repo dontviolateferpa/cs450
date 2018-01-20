@@ -103,7 +103,6 @@ def receive_args():
 def load_data_set():
     """load dataset"""
     iris = datasets.load_iris()
-
     return iris
 
 def load_data_set_from_csv(file_name):
@@ -151,8 +150,9 @@ def display_similarity(predictions, targets_test, method):
 def main():
     """main"""
     args = receive_args().parse_args()
+
+    print "Iris dataset:"
     iris = choose_data_set(args)
-    print_data_set(iris)
 
     # above and beyond for cross validation
     clf = svm.SVC(kernel='linear', C=1)
@@ -162,14 +162,8 @@ def main():
     scores = cross_val_score(clf, iris.data, iris.target, cv=5)
 
     classifier = GaussianNB()
-
     model = classifier.fit(data_train, targets_train)
-
     targets_predicted = model.predict(data_test)
-
-    print targets_predicted
-    print ""
-    print targets_test
 
     display_similarity(targets_predicted, targets_test, "gaussian")
 
@@ -262,5 +256,15 @@ def main():
 
     if args.save_file != None:
         save_csv(args.save_file)
+
+    print "Digits dataset"
+    digits = datasets.load_digits()
+    data_train, data_test, targets_train, targets_test = train_test_split(digits.data, digits.target, test_size=0.3, train_size=0.7)
+
+    classifier = MyKNearestClassifier(3)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
 
 main()

@@ -99,6 +99,10 @@ class KModel:
         return nn
 
 def get_col(arr, col):
+    """
+    Got this function from Stack Overflow
+    https://stackoverflow.com/questions/903853/how-do-you-extract-a-column-from-a-multi-dimensional-array
+    """
     return map(lambda x : x[col], arr)
 
 def receive_args():

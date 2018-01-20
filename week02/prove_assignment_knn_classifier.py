@@ -34,6 +34,13 @@ class MyKNearestClassifier:
         """Fit the data"""
         return KModel(self._k, data_train, targets_train)
 
+# comparison to sklearn's implementation:
+#   For sklearn's implementation of the k-nearest neighbors classifier, they implement
+#   a KD tree. My implementation simply takes the data as it is and classifies it with
+#   some nested for loops. They also have an obtion for a Ball Tree (which I haven't)
+#   learned much about, so they allow for different options (whereas mine has only one
+#   option).
+# source: http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
 class KModel:
     """A model with data and a predict method"""
     _k = None
@@ -176,15 +183,81 @@ def main():
     model = classifier.fit(data_train, targets_train)
     predictions = model.predict(data_test)
 
-    display_similarity(predictions, targets_test, "k-nearest neighbors")
+    display_similarity(predictions, targets_test, "k-nearest neighbors, k=3")
+
+    classifier = KNeighborsClassifier(n_neighbors=10)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "k-nearest neighbors, k=10")
+
+    classifier = KNeighborsClassifier(n_neighbors=20)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "k-nearest neighbors, k=20")
+
+    classifier = KNeighborsClassifier(n_neighbors=1)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "k-nearest neighbors, k=1")
 
     classifier = MyKNearestClassifier(3)
     model = classifier.fit(data_train, targets_train)
     predictions = model.predict(data_test)
 
-    display_similarity(predictions, targets_test, "my k-nearest neighbors")
-    
-    print "Scores:"
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
+
+    classifier = MyKNearestClassifier(4)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=4")
+
+    classifier = MyKNearestClassifier(5)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=5")
+
+    classifier = MyKNearestClassifier(6)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=6")
+
+    classifier = MyKNearestClassifier(7)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=7")
+
+    classifier = MyKNearestClassifier(10)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=10")
+
+    classifier = MyKNearestClassifier(20)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=20")
+
+    classifier = MyKNearestClassifier(2)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=2")
+
+    classifier = MyKNearestClassifier(1)
+    model = classifier.fit(data_train, targets_train)
+    predictions = model.predict(data_test)
+
+    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=1")
+
+    print "Scores from n-fold cross validation:"
     print scores
 
     if args.save_file != None:

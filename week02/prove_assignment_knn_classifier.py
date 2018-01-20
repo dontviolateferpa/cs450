@@ -266,5 +266,6 @@ def main():
     predictions = model.predict(data_test)
 
     display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
+    print_data_set(digits)
 
 main()

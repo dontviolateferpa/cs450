@@ -66,12 +66,6 @@ class KModel:
         """
         Make a prediction
         """
-        #    compute Euclidean distance for each point in data_train
-        #        store euc_distance data_train pair into new array (we need a new array for each element in data_train)
-        #        take the top k of that new array and see which class occurs the most
-        #    have separate array for targets_predict, store decided class into that array
-        # we are making predictions where we want the 
-
         targets_predict = []
 
         # we want to compute the nearest neighbors of data_test
@@ -204,16 +198,5 @@ def main():
     
     print "Scores:"
     print scores
-
-    # classifier = KNearest
-    # model = ... (which consists of just storing the data and the value for k-nearest neighbors)
-    #    classifier.fit won't need normalization for this one
-    # targets_predict = model.predict(data_test)
-    #    we return an array of classes we predicted, which we will later compare to test_predictions
-    # sloppy pseudocode for model.predict()
-    #    compute Euclidean distance for each point in data_train
-    #        store euc_distance data_train pair into new array (we need a new array for each element in data_train)
-    #        take the top k of that new array and see which class occurs the most
-    #    have separate array for targets_predict, store decided class into that array
 
 main()

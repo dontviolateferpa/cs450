@@ -11,14 +11,9 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
 class HardCodedClassifier:
-    """
-    The Hard Coded Classifier
-    """
-
+    """The Hard Coded Classifier"""
     def fit(self, data_train, targets_train):
-        """
-        Fit the data
-        """
+        """Fit the data"""
         return self
 
     def predict(self, data_test):
@@ -30,42 +25,29 @@ class HardCodedClassifier:
         return targets_predicted
 
 class MyKNearestClassifier:
-    """
-    My implementation of the k-nearest neighbors classifier.
-    """
-
+    """My implementation of the k-nearest neighbors classifier."""
     _k = None
-
     def __init__(self, k):
         self._k = k
 
     def fit(self, data_train, targets_train):
-        """
-        Fit the data
-        """
-        
+        """Fit the data"""
         return KModel(self._k, data_train, targets_train)
 
 class KModel:
-    """
-    A model with data and a predict method
-    """
+    """A model with data and a predict method"""
     _k = None
     _data_train = None
     _targets_train = None
 
     def __init__(self, k, data_train, targets_train):
-        """
-        Put data in the model
-        """
+        """Put data in the model"""
         self._k = k
         self._data_train = data_train
         self._targets_train = targets_train
 
     def predict(self, data_test):
-        """
-        Make a prediction
-        """
+        """Make a prediction"""
         targets_predict = []
 
         # we want to compute the nearest neighbors of data_test
@@ -85,9 +67,7 @@ class KModel:
         return targets_predict
 
     def _compute_nn(self, nns):
-        """
-        Compute the nearest neighbor
-        """
+        """Compute the nearest neighbor"""
         top_k = nns[:self._k]
         k_classes = get_col(top_k, 1)
         nn = None
@@ -157,7 +137,7 @@ def print_data_set(data_set):
     print ""
 
 def display_similarity(predictions, targets_test, method):
-    """"""
+    """display the similarity between two arrays"""
     sm=difflib.SequenceMatcher(None, predictions, targets_test)
     print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
 

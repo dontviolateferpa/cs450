@@ -10,20 +10,6 @@ from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
-class HardCodedClassifier:
-    """The Hard Coded Classifier"""
-    def fit(self, data_train, targets_train):
-        """Fit the data"""
-        return self
-
-    def predict(self, data_test):
-        targets_predicted = []
-
-        for x in data_test:
-            targets_predicted.append(0)
-
-        return targets_predicted
-
 class MyKNearestClassifier:
     """My implementation of the k-nearest neighbors classifier."""
     _k = None
@@ -167,105 +153,22 @@ def main():
 
     display_similarity(targets_predicted, targets_test, "gaussian")
 
-    classifier = HardCodedClassifier()
-    hard_model = classifier.fit(data_train, targets_train)
-    targets_predicted = hard_model.predict(data_test)
-
-    display_similarity(targets_predicted, targets_test, "hard coded")
-
     classifier = KNeighborsClassifier(n_neighbors=3)
     model = classifier.fit(data_train, targets_train)
     predictions = model.predict(data_test)
 
     display_similarity(predictions, targets_test, "k-nearest neighbors, k=3")
 
-    classifier = KNeighborsClassifier(n_neighbors=10)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "k-nearest neighbors, k=10")
-
-    classifier = KNeighborsClassifier(n_neighbors=20)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "k-nearest neighbors, k=20")
-
-    classifier = KNeighborsClassifier(n_neighbors=1)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "k-nearest neighbors, k=1")
-
-    classifier = MyKNearestClassifier(3)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
     display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
 
     classifier = MyKNearestClassifier(4)
     model = classifier.fit(data_train, targets_train)
     predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=4")
-
-    classifier = MyKNearestClassifier(5)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=5")
-
-    classifier = MyKNearestClassifier(6)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=6")
-
-    classifier = MyKNearestClassifier(7)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=7")
-
-    classifier = MyKNearestClassifier(10)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=10")
-
-    classifier = MyKNearestClassifier(20)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=20")
-
-    classifier = MyKNearestClassifier(2)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=2")
-
-    classifier = MyKNearestClassifier(1)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=1")
-
     print "Scores from n-fold cross validation:"
     print scores
 
     if args.save_file != None:
         save_csv(args.save_file)
 
-    print "Digits dataset"
-    digits = datasets.load_digits()
-    data_train, data_test, targets_train, targets_test = train_test_split(digits.data, digits.target, test_size=0.3, train_size=0.7)
-
-    classifier = MyKNearestClassifier(3)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
-    print_data_set(digits)
 
 main()

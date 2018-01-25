@@ -86,11 +86,6 @@ def receive_args():
 
     return parser
 
-def load_data_set():
-    """load dataset"""
-    iris = datasets.load_iris()
-    return iris
-
 def load_data_set_from_csv(file_name):
     """load the dataset from a csv"""
     # above and beyond to save (commented out) and load data to and from a CSV file
@@ -104,7 +99,7 @@ def choose_data_set(args):
     """choose the dataset based on args passed"""
     data_set = None
     if args.csv_file == None:
-        data_set = load_data_set()
+        raise ValueError("no file name passed")
     else:
         data_set = load_data_set_from_csv(args.csv_file)
 
@@ -137,15 +132,15 @@ def main():
     """main"""
     args = receive_args().parse_args()
 
-    print "Iris dataset:"
-    iris = choose_data_set(args)
+    print "Dataset:"
+    ds = choose_data_set(args)
 
     # above and beyond for cross validation
     clf = svm.SVC(kernel='linear', C=1)
-    data_train, data_test, targets_train, targets_test = train_test_split(iris.data, iris.target, test_size=0.3, train_size=0.7)
+    data_train, data_test, targets_train, targets_test = train_test_split(ds.data, ds.target, test_size=0.3, train_size=0.7)
 
     # obtain scores from cross validation
-    scores = cross_val_score(clf, iris.data, iris.target, cv=5)
+    scores = cross_val_score(clf, ds.data, ds.target, cv=5)
 
     classifier = GaussianNB()
     model = classifier.fit(data_train, targets_train)
@@ -169,6 +164,5 @@ def main():
 
     if args.save_file != None:
         save_csv(args.save_file)
-
 
 main()

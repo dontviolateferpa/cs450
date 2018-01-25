@@ -1,6 +1,7 @@
 import argparse
 import difflib
 import numpy as np
+import pandas as pd
 from numpy import genfromtxt
 from numpy.linalg import norm
 from sklearn import datasets
@@ -20,13 +21,6 @@ class MyKNearestClassifier:
         """Fit the data"""
         return KModel(self._k, data_train, targets_train)
 
-# comparison to sklearn's implementation:
-#   For sklearn's implementation of the k-nearest neighbors classifier, they implement
-#   a KD tree. My implementation simply takes the data as it is and classifies it with
-#   some nested for loops. They also have an obtion for a Ball Tree (which I haven't)
-#   learned much about, so they allow for different options (whereas mine has only one
-#   option).
-# source: http://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
 class KModel:
     """A model with data and a predict method"""
     _k = None
@@ -88,8 +82,24 @@ def receive_args():
 
 def load_data_set_from_csv(file_name):
     """load the dataset from a csv"""
-    # above and beyond to save (commented out) and load data to and from a CSV file
-    iris_csv_data = genfromtxt(file_name, delimiter=',')
+    df = pd.io.parsers.read_csv(
+        file_name,
+        header=None,
+        na_values=[" ?"]
+    )
+
+    return df
+
+def prep_data(ds):
+    """prepare the dataset we receive"""
+    ds.dropna(inplace=True)
+    cols_dict_g = ds.columns.to_series().groupby(ds.dtypes).groups
+    cols_dict = {k.name: v for k, v in cols_dict_g.items()}
+    # get all cols of type 'object'
+    cols = cols_dict['object']
+    # make all object-type cols have dummy cols
+    ds = pd.get_dummies(ds, columns=cols)
+    return ds
 
 def save_csv(file_name):
     """save a csv file"""
@@ -101,27 +111,9 @@ def choose_data_set(args):
     if args.csv_file == None:
         raise ValueError("no file name passed")
     else:
-        data_set = load_data_set_from_csv(args.csv_file)
+        data_set = prep_data(load_data_set_from_csv(args.csv_file))
 
     return data_set
-
-def print_data_set(data_set):
-    """print the data"""
-
-    # Show the data (the attributes of each instance)
-    print "data"
-    print (data_set.data)
-    print ""
-
-    # Show the target values (in numberic format) of each instance
-    print "target"
-    print (data_set.target)
-    print ""
-
-    # Show the actual target names that correspond to each number
-    print "target names"
-    print(data_set.target_names)
-    print ""
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
@@ -133,34 +125,8 @@ def main():
     args = receive_args().parse_args()
 
     print "Dataset:"
-    ds = choose_data_set(args)
-
-    # above and beyond for cross validation
-    clf = svm.SVC(kernel='linear', C=1)
-    data_train, data_test, targets_train, targets_test = train_test_split(ds.data, ds.target, test_size=0.3, train_size=0.7)
-
-    # obtain scores from cross validation
-    scores = cross_val_score(clf, ds.data, ds.target, cv=5)
-
-    classifier = GaussianNB()
-    model = classifier.fit(data_train, targets_train)
-    targets_predicted = model.predict(data_test)
-
-    display_similarity(targets_predicted, targets_test, "gaussian")
-
-    classifier = KNeighborsClassifier(n_neighbors=3)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-
-    display_similarity(predictions, targets_test, "k-nearest neighbors, k=3")
-
-    display_similarity(predictions, targets_test, "my k-nearest neighbors, k=3")
-
-    classifier = MyKNearestClassifier(4)
-    model = classifier.fit(data_train, targets_train)
-    predictions = model.predict(data_test)
-    print "Scores from n-fold cross validation:"
-    print scores
+    df = choose_data_set(args)
+    print df
 
     if args.save_file != None:
         save_csv(args.save_file)

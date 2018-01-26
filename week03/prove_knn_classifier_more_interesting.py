@@ -2,6 +2,7 @@ import argparse
 import difflib
 import numpy as np
 import pandas as pd
+import re
 from numpy import genfromtxt
 from numpy.linalg import norm
 from sklearn import datasets
@@ -10,6 +11,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+
+# regex for comma separated list of integers
+# ((\d+)$(\d+,)*)
 
 class MyKNearestClassifier:
     """My implementation of the k-nearest neighbors classifier."""
@@ -75,10 +79,16 @@ def get_col(arr, col):
 def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
-    parser.add_argument('--csv_file', dest='csv_file', action='store', default=None)
+    parser.add_argument('--csv_file', dest='csv_file', action='store', default=None, required=True)
     parser.add_argument('--save_file', dest='save_file', action='store', default=None)
+    parser.add_argument('--drop_cols', dest='drop_cols', action='store', default=None)
+    parser.add_argument('--na_value', dest='na_value', action='store', default=" ?")
 
     return parser
+
+def check_args(args):
+    """make sure args are valid"""
+    pass
 
 def load_data_set_from_csv(file_name):
     """load the dataset from a csv"""
@@ -123,10 +133,11 @@ def display_similarity(predictions, targets_test, method):
 def main():
     """main"""
     args = receive_args().parse_args()
+    check_args(args)
 
-    print "Dataset:"
+    # print "Dataset:"
     df = choose_data_set(args)
-    print df
+    # print df
 
     if args.save_file != None:
         save_csv(args.save_file)

@@ -80,7 +80,6 @@ def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
     parser.add_argument('--csv_file', dest='csv_file', action='store', default=None, required=True)
-    parser.add_argument('--save_file', dest='save_file', action='store', default=None)
     parser.add_argument('--drop_cols', dest='drop_cols', action='store', default=None)
     parser.add_argument('--na_value', dest='na_value', action='store', default=" ?")
 
@@ -111,10 +110,6 @@ def prep_data(ds):
     ds = pd.get_dummies(ds, columns=cols)
     return ds
 
-def save_csv(file_name):
-    """save a csv file"""
-    np.savetxt(file_name, iris.data, delimiter=",")
-
 def choose_data_set(args):
     """choose the dataset based on args passed"""
     data_set = None
@@ -138,8 +133,5 @@ def main():
     # print "Dataset:"
     df = choose_data_set(args)
     # print df
-
-    if args.save_file != None:
-        save_csv(args.save_file)
 
 main()

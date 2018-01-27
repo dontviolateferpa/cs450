@@ -77,8 +77,9 @@ def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
     parser.add_argument('--csv_file', dest='csv_file', action='store', required=True)
-    parser.add_argument('--drop_cols', dest='drop_cols', action='store', nargs='*', type=int, default=None)
-    parser.add_argument('--na_values', dest='na_values', action='store', nargs='+', required=True)
+    parser.add_argument('--drop_cols', dest='drop_cols', action='store', nargs='*', type=int)
+    parser.add_argument('--na_values', dest='na_values', action='store', nargs='*', type=str)
+    parser.add_argument('--col_names', dest='col_names', action='store', nargs='*', type=str)
 
     return parser
 
@@ -87,6 +88,7 @@ def load_data_set_from_csv(file_name, args):
     df = pd.io.parsers.read_csv(
         file_name,
         header=None,
+        names=args.col_names,
         na_values=args.na_values
     )
 
@@ -95,12 +97,12 @@ def load_data_set_from_csv(file_name, args):
 def prep_data(ds):
     """prepare the dataset we receive"""
     ds.dropna(inplace=True)
-    cols_dict_g = ds.columns.to_series().groupby(ds.dtypes).groups
-    cols_dict = {k.name: v for k, v in cols_dict_g.items()}
-    # get all cols of type 'object'
-    cols = cols_dict['object']
-    # make all object-type cols have dummy cols
-    ds = pd.get_dummies(ds, columns=cols)
+    # cols_dict_g = ds.columns.to_series().groupby(ds.dtypes).groups
+    # cols_dict = {k.name: v for k, v in cols_dict_g.items()}
+    # # get all cols of type 'object'
+    # cols = cols_dict['object']
+    # # make all object-type cols have dummy cols
+    # ds = pd.get_dummies(ds, columns=cols)
     return ds
 
 def choose_data_set(args):
@@ -122,8 +124,8 @@ def main():
     """main"""
     args = receive_args().parse_args()
 
-    # print "Dataset:"
+    print "Dataset:"
     df = choose_data_set(args)
-    # print df
+    print df
 
 main()

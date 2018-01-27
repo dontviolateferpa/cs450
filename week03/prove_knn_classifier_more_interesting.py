@@ -35,25 +35,25 @@ class KModel:
         self._data_train = data_train
         self._targets_train = targets_train
 
-    def predict(self, data_test):
+    def predict(self, dt):
         """Make a prediction"""
         targets_predict = []
+        data_test = dt.as_matrix(columns=None)
+        data_train = self._data_train.as_matrix(columns=None)
         # we want to compute the nearest neighbors of data_test
-        for point_x in data_test.iterrows():
+        for point_x in data_test:
             nns = []
             y_count = 0
-            # for point_y in self._data_train.iterrows():
-            #     # compute euc distance
-            #     print "point_y"
-            #     print point_y
-            #     dist = np.linalg.norm(point_x - point_y)
-            #     nns.append([dist, self._targets_train[y_count]])
-            #     y_count = y_count + 1
-            # nns = sorted(nns)
-            # nn = self._compute_nn(nns)
-            # targets_predict.append(nn)
+            for point_y in data_train:
+                # compute euc distance
+                dist = np.linalg.norm(point_x - point_y)
+                nns.append([dist, self._targets_train.as_matrix(columns=None)[y_count]])
+                y_count = y_count + 1
+            nns = sorted(nns)
+            nn = self._compute_nn(nns)
+            targets_predict.append(nn)
         # this will have to be the same length as targets_test
-        return targets_predict
+        return np.array(targets_predict)
 
     def _compute_nn(self, nns):
         """Compute the nearest neighbor"""
@@ -88,6 +88,7 @@ def receive_args():
 
 def load_data_set_from_csv(file_name, args):
     """load the dataset from a csv"""
+    CAR_COL_NAMES = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety', 'condition']
     df = pd.io.parsers.read_csv(
         file_name,
         header=None,
@@ -101,17 +102,26 @@ def load_data_set_from_csv(file_name, args):
 def prep_data(ds, args):
     """prepare the dataset we receive"""
     ds.dropna(inplace=True)
+    col_names = args.col_names
+    drop_cols = args.drop_cols
+    target_col = args.target_col
     # get classes we will predict
     ds_target = ds.get(args.target_col).astype('category').cat.codes
     # drop classes we will predict from data    
-    ds_data = ds.drop(columns=args.target_col)
-    cols_dict_g = ds_data.columns.to_series().groupby(ds_data.dtypes).groups
-    cols_dict = {k.name: v for k, v in cols_dict_g.items()}
-    # get all cols of type 'object'
-    cols = cols_dict['object']
+    ds_data = ds.drop(columns=args.target_col, inplace=True)
+    # cols_dict_g = ds_data.columns.to_series().groupby(ds_data.dtypes).groups
+    # cols_dict = {k.name: v for k, v in cols_dict_g.items()}
+    # # get all cols of type 'object'
+    # cols = cols_dict['object']
     # make all object-type cols have dummy cols
-    ds_data = pd.get_dummies(ds_data, columns=cols)
-    return ds_data, ds_target
+    # ds_data = pd.get_dummies(ds_data, columns=cols)
+    ds['maint'] = ds['maint'].astype('category').cat.codes
+    ds['doors'] = ds['doors'].astype('category').cat.codes
+    ds['persons'] = ds['persons'].astype('category').cat.codes
+    ds['lug_boot'] = ds['lug_boot'].astype('category').cat.codes
+    ds['safety'] = ds['safety'].astype('category').cat.codes
+    ds['condition'] = ds['condition'].astype('category').cat.codes
+    return ds, ds_target
 
 def choose_data_set(args):
     """choose the dataset based on args passed"""
@@ -123,14 +133,26 @@ def choose_data_set(args):
         df_data, df_target = prep_data(load_data_set_from_csv(args.csv_file, args), args)
     return model_selection.train_test_split(df_data, df_target, test_size=0.3, random_state=3)
 
-
-def test_classifier(classifier, data_train, data_test, targets_train, targets_test):
+def test_classifier(classifier, args, data_train, data_test, targets_train, targets_test):
     """test a model"""
     model = classifier.fit(data_train, targets_train)
     targets_predicted = model.predict(data_test)
 
-    # display_similarity(targets_predicted, targets_test, "MyKNearestNeighbor")
+    display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "MyKNearestNeighbor")
+    # a = targets_predicted
+    # b = targets_test.as_matrix(columns=None)
+    # unique_a, counts_a = np.unique(a, return_counts=True)
+    # unique_b, counts_b = np.unique(b, return_counts=True)
 
+    # print "targets predicted"
+    # print dict(zip(unique_a, counts_a))
+    # print "targets test"
+    # print dict(zip(unique_b, counts_b))
+
+    # print "targets predicted"
+    # print a
+    # print "targets test"
+    # print b
     # print "data_train"
     # print data_train.tail()
     # print "data_test"
@@ -142,14 +164,18 @@ def test_classifier(classifier, data_train, data_test, targets_train, targets_te
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    sm=difflib.SequenceMatcher(None, predictions, targets_test)
-    print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
+    # sm=difflib.SequenceMatcher(None, predictions, targets_test)
+    sim_score = 0
+    count = 0
+    for x in predictions:
+        if x == targets_test[count]:
+            sim_score = sim_score + 1
+    print "The two are " + str(float(sim_score) / float(len(predictions))) + " percent similar (" + method + ")"
 
 def main():
     """main"""
     args = receive_args().parse_args()
-    choose_data_set(args)
     dtr, dte, ttr, tte = choose_data_set(args)
-    test_classifier(MyKNearestClassifier(3), dtr, dte, ttr, tte)
+    test_classifier(MyKNearestClassifier(3), args, dtr, dte, ttr, tte)
 
 main()

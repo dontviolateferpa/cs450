@@ -12,9 +12,6 @@ from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
-# regex for comma separated list of integers
-# ((\d+)$(\d+,)*)
-
 class MyKNearestClassifier:
     """My implementation of the k-nearest neighbors classifier."""
     _k = None
@@ -79,22 +76,18 @@ def get_col(arr, col):
 def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
-    parser.add_argument('--csv_file', dest='csv_file', action='store', default=None, required=True)
-    parser.add_argument('--drop_cols', dest='drop_cols', action='store', default=None)
-    parser.add_argument('--na_value', dest='na_value', action='store', default=" ?")
+    parser.add_argument('--csv_file', dest='csv_file', action='store', required=True)
+    parser.add_argument('--drop_cols', dest='drop_cols', action='store', nargs='*', type=int, default=None)
+    parser.add_argument('--na_values', dest='na_values', action='store', nargs='+', required=True)
 
     return parser
 
-def check_args(args):
-    """make sure args are valid"""
-    pass
-
-def load_data_set_from_csv(file_name):
+def load_data_set_from_csv(file_name, args):
     """load the dataset from a csv"""
     df = pd.io.parsers.read_csv(
         file_name,
         header=None,
-        na_values=[" ?"]
+        na_values=args.na_values
     )
 
     return df
@@ -116,7 +109,7 @@ def choose_data_set(args):
     if args.csv_file == None:
         raise ValueError("no file name passed")
     else:
-        data_set = prep_data(load_data_set_from_csv(args.csv_file))
+        data_set = prep_data(load_data_set_from_csv(args.csv_file, args))
 
     return data_set
 
@@ -128,7 +121,6 @@ def display_similarity(predictions, targets_test, method):
 def main():
     """main"""
     args = receive_args().parse_args()
-    check_args(args)
 
     # print "Dataset:"
     df = choose_data_set(args)

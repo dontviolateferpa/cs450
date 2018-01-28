@@ -12,7 +12,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import normalize
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.preprocessing import LabelEncoder
+from sklearn import preprocessing
 
 class MyKNearestClassifier:
     """My implementation of the k-nearest neighbors classifier."""
@@ -36,23 +38,45 @@ class KModel:
         self._data_train = data_train
         self._targets_train = targets_train
 
-    def predict(self, dt):
+    def predict(self, dt, is_np_array):
         """Make a prediction"""
         targets_predict = []
         data_test = dt
         data_train = self._data_train
         # we want to compute the nearest neighbors of data_test
-        for point_x in data_test:
-            nns = []
-            y_count = 0
-            for point_y in data_train:
-                # compute euc distance
-                dist = np.linalg.norm(point_x - point_y)
-                nns.append([dist, self._targets_train[y_count]])
-                y_count = y_count + 1
-            nns = sorted(nns)
-            nn = self._compute_nn(nns)
-            targets_predict.append(nn)
+        if is_np_array == False:
+            for point_x in data_test:
+                nns = []
+                y_count = 0
+                print "print point_x"
+                print point_x
+                for point_y in data_train:
+                    print "print point_y"
+                    print point_y
+                    # compute euc distance
+                    dist = np.linalg.norm(point_x - point_y)
+                    nns.append([dist, self._targets_train[y_count]])
+                    y_count = y_count + 1
+                nns = sorted(nns)
+                nn = self._compute_nn(nns)
+                targets_predict.append(nn)
+            # this will have to be the same length as targets_test
+        else:
+            for x, point_x in np.ndenumerate(data_test):
+                point_y = []
+                nns = []
+                y_count = 0
+                for tup_y, y in np.ndenumerate(data_train):
+                    point_y.append(y)
+                    if tup_y[0] == 5:
+                        # compute euc distance
+                        dist = np.linalg.norm(point_x - point_y)
+                        nns.append([dist, self._targets_train.tolist()[y_count]])
+                        y_count = y_count + 1
+                        point_y = []
+                nns = sorted(nns)
+                nn = self._compute_nn(nns)
+                targets_predict.append(nn)
         # this will have to be the same length as targets_test
         return np.array(targets_predict)
 
@@ -145,7 +169,6 @@ def prep_data_car(ds, args):
 def prep_data_pima(ds, args):
     """prep the pima indians dataset"""
     ds[['plasma glucose concentration', 'diastolic blood pressure', 'triceps skin fold thickness', '2H serum insulin', 'bmi']] = ds[['plasma glucose concentration', 'diastolic blood pressure', 'triceps skin fold thickness', '2H serum insulin', 'bmi']].replace(0, np.NaN)
-    print "tutorial"
     print(ds.isnull().sum())
     ds.dropna(inplace=True)
     ds_target = ds['class var']
@@ -154,13 +177,23 @@ def prep_data_pima(ds, args):
 
 def prep_data_mpg(ds, args):
     """prep the mpg dataset"""
+    lab_enc = LabelEncoder()
     ds[['cyl','disp','hp','weight','acc','year','origin']] = ds[['cyl','disp','hp','weight','acc','year','origin']].replace('?', np.NaN)
     ds.dropna(inplace=True)
-    ds_target = ds['mpg']
+    ds_target = ds['mpg'].astype('int64')
     ds.drop(columns=['mpg', 'name'], inplace=True)
-    print ds
-    # ds = ds.apply(pd.to_numeric, args=('coerce',))
-    return ds, ds_target
+    ds = pd.get_dummies(ds, columns=['origin'])
+    ds['cyl'] = ds['cyl'].astype('float64')
+    ds['year'] = ds['year'].astype('float64')
+    ds['disp'] = ds['disp'].astype('float64')
+    ds['hp'] = ds['hp'].astype('float64')
+    ds['weight'] = ds['weight'].astype('float64')
+    ds['acc'] = ds['acc'].astype('float64')
+
+    std_scale = preprocessing.StandardScaler().fit(ds[['cyl', 'disp', 'hp', 'weight', 'acc', 'year']])
+    ds_std = std_scale.transform(ds[['cyl','disp', 'hp', 'weight', 'acc', 'year']])
+
+    return ds_std, ds_target
 
 def choose_data_set(args):
     """choose the dataset based on args passed"""
@@ -181,32 +214,29 @@ def choose_data_set(args):
 
 def test_classifier(classifier, args, method, data_train, data_test, targets_train, targets_test):
     """test a model"""
-    model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
-    targets_predicted = model.predict(data_test.as_matrix(columns=None))
+    model = None
+    targets_predicted = None
+    print type(data_train)
 
-    display_similarity(targets_predicted, targets_test.as_matrix(columns=None), method)
-    # a = targets_predicted
-    # b = targets_test.as_matrix(columns=None)
-    # unique_a, counts_a = np.unique(a, return_counts=True)
-    # unique_b, counts_b = np.unique(b, return_counts=True)
+    if args.csv_file != "mpg.csv":
+        model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
+        targets_predicted = model.predict(data_test.as_matrix(columns=None), False)
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None))
 
-    # print "targets predicted"
-    # print dict(zip(unique_a, counts_a))
-    # print "targets test"
-    # print dict(zip(unique_b, counts_b))
+        classifier = KNeighborsClassifier(n_neighbors=3)
+        model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
+        targets_predicted = model.predict(data_test.as_matrix(columns=None), "KNearest")
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None))
 
-    # print "targets predicted"
-    # print a
-    # print "targets test"
-    # print b
-    # print "data_train"
-    # print data_train.tail()
-    # print "data_test"
-    # print data_test.tail()
-    # print "targets_train"
-    # print targets_train.head()
-    # print "targets_test"
-    # print targets_test.head()
+    elif args.csv_file == "mpg.csv":
+        model = classifier.fit(data_train, targets_train)
+        targets_predicted = model.predict(data_test, True)
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), method)
+
+        classifier = KNeighborsClassifier(n_neighbors=3)
+        model = classifier.fit(data_train, targets_train)
+        targets_predicted = model.predict(data_test)
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "KNearest")        
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
@@ -223,6 +253,5 @@ def main():
     args = receive_args().parse_args()
     dtr, dte, ttr, tte = choose_data_set(args)
     test_classifier(MyKNearestClassifier(3), args, "MyKNearest", dtr, dte, ttr, tte)
-    test_classifier(KNeighborsClassifier(n_neighbors=3), args, "KNearest", dtr, dte, ttr, tte)
 
 main()

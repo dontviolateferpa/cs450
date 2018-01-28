@@ -88,6 +88,18 @@ class KModel:
                 nn = x
         return nn
 
+def mpg_data_to_array(data):
+    """convert mpg's data_train to an array without tuples"""
+    data_converted = []
+    point = []
+    for tup_y, y in np.ndenumerate(data):
+        point.append(y)
+        if tup_y[1] == 5:
+            data_converted.append(point)
+            point = []
+
+    return data_converted
+
 def get_col(arr, col):
     """
     Got this function from Stack Overflow
@@ -213,6 +225,7 @@ def choose_data_set(args):
 
     return model_selection.train_test_split(df_data, df_target, test_size=0.3, random_state=3)
 
+
 def test_classifier(classifier, args, method, data_train, data_test, targets_train, targets_test):
     """test a model"""
     model = None
@@ -229,7 +242,6 @@ def test_classifier(classifier, args, method, data_train, data_test, targets_tra
         model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
         targets_predicted = model.predict(data_test.as_matrix(columns=None))
         display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "KNearest")
-
 
     elif args.csv_file == "mpg.csv":
         model = classifier.fit(data_train, targets_train)

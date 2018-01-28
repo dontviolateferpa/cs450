@@ -48,11 +48,7 @@ class KModel:
             for point_x in data_test:
                 nns = []
                 y_count = 0
-                print "print point_x"
-                print point_x
                 for point_y in data_train:
-                    print "print point_y"
-                    print point_y
                     # compute euc distance
                     dist = np.linalg.norm(point_x - point_y)
                     nns.append([dist, self._targets_train[y_count]])
@@ -209,6 +205,11 @@ def choose_data_set(args):
         df_data, df_target = prep_data_mpg(load_data_set_from_csv(args.csv_file, args), args)
     else:
         raise ValueError("name of file must be either \'car.csv\', \'pima.csv\' or \'mpg.csv\'")
+    
+    clf = svm.SVC(kernel='linear', C=1)
+    scores = cross_val_score(clf, df_data, df_target)
+    print "scores from cross validation"
+    print scores
 
     return model_selection.train_test_split(df_data, df_target, test_size=0.3, random_state=3)
 
@@ -216,17 +217,19 @@ def test_classifier(classifier, args, method, data_train, data_test, targets_tra
     """test a model"""
     model = None
     targets_predicted = None
-    print type(data_train)
+    clf = svm.SVC(kernel='linear', C=1)
+    scores = None
 
     if args.csv_file != "mpg.csv":
         model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
         targets_predicted = model.predict(data_test.as_matrix(columns=None), False)
-        display_similarity(targets_predicted, targets_test.as_matrix(columns=None))
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), method)
 
         classifier = KNeighborsClassifier(n_neighbors=3)
         model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
-        targets_predicted = model.predict(data_test.as_matrix(columns=None), "KNearest")
-        display_similarity(targets_predicted, targets_test.as_matrix(columns=None))
+        targets_predicted = model.predict(data_test.as_matrix(columns=None))
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "KNearest")
+
 
     elif args.csv_file == "mpg.csv":
         model = classifier.fit(data_train, targets_train)
@@ -236,11 +239,10 @@ def test_classifier(classifier, args, method, data_train, data_test, targets_tra
         classifier = KNeighborsClassifier(n_neighbors=3)
         model = classifier.fit(data_train, targets_train)
         targets_predicted = model.predict(data_test)
-        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "KNearest")        
+        display_similarity(targets_predicted, targets_test.as_matrix(columns=None), "KNearest")
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    # sm=difflib.SequenceMatcher(None, predictions, targets_test)
     sim_score = 0
     count = 0
     for x in predictions:

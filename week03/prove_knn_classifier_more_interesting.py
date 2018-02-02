@@ -58,6 +58,8 @@ class KModel:
                 targets_predict.append(nn)
             # this will have to be the same length as targets_test
         else:
+            # the reason for doing this is because the prepration from sklearn
+            # turns the data into an sklearn data type
             for x, point_x in np.ndenumerate(data_test):
                 point_y = []
                 nns = []
@@ -160,12 +162,6 @@ def prep_data_car(ds, args):
     ds_target = ds['condition'].astype('category').cat.codes
     # drop classes we will predict from data    
     ds.drop(columns=['condition'], inplace=True)
-    # cols_dict_g = ds_data.columns.to_series().groupby(ds_data.dtypes).groups
-    # cols_dict = {k.name: v for k, v in cols_dict_g.items()}
-    # # get all cols of type 'object'
-    # cols = cols_dict['object']
-    # make all object-type cols have dummy cols
-    # ds_data = pd.get_dummies(ds_data, columns=cols)
     ds['buying'] = ds['buying'].astype('category').cat.codes
     ds['maint'] = ds['maint'].astype('category').cat.codes
     ds['doors'] = ds['doors'].astype('category').cat.codes
@@ -198,6 +194,8 @@ def prep_data_mpg(ds, args):
     ds['weight'] = ds['weight'].astype('float64')
     ds['acc'] = ds['acc'].astype('float64')
 
+    # this caused me a lot of headaches, but it's necessary
+    # this returns an sklearn datatype, not a pandas dataframe
     std_scale = preprocessing.StandardScaler().fit(ds[['cyl', 'disp', 'hp', 'weight', 'acc', 'year']])
     ds_std = std_scale.transform(ds[['cyl','disp', 'hp', 'weight', 'acc', 'year']])
 
@@ -233,6 +231,7 @@ def test_classifier(classifier, args, method, data_train, data_test, targets_tra
     clf = svm.SVC(kernel='linear', C=1)
     scores = None
 
+    # since we are working with two different data types, we have to branch the logic (ugly, I know)
     if args.csv_file != "mpg.csv":
         model = classifier.fit(data_train.as_matrix(columns=None), targets_train.as_matrix(columns=None))
         targets_predicted = model.predict(data_test.as_matrix(columns=None), False)
@@ -264,7 +263,9 @@ def display_similarity(predictions, targets_test, method):
 
 def main():
     """main"""
+    # receive arguments from the user
     args = receive_args().parse_args()
+    # receive the data needed to classify
     dtr, dte, ttr, tte = choose_data_set(args)
     test_classifier(MyKNearestClassifier(3), args, "MyKNearest", dtr, dte, ttr, tte)
 

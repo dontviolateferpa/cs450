@@ -2,7 +2,9 @@
 
 import argparse
 import pandas as pd
+import numpy as np
 from anytree import Node, RenderTree
+from collections import Counter
 
 COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
 COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
@@ -19,6 +21,7 @@ class MyDecisionTreeClassifier:
 class DTCModel:
     _train_data = None
     _train_target = None
+    _tree = None
 
     def __init__(self, train_data, train_target):
         """put the data in the model"""
@@ -27,9 +30,16 @@ class DTCModel:
 
         self._make_ID3_tree()
 
+    def calc_entropy():
+        """calculate the entropy of a given class"""
+        pass
+
     def _make_ID3_tree():
         """make the ID3 decision tree"""
-        pass
+        col_entropies = []
+        # iterate through each column in the df
+        for col in self._train_target.columns:
+            print self._train_target[col]
 
     def predict(self, test_data):
         """"""
@@ -78,11 +88,59 @@ def prep_data(args):
     else:
         raise ValueError("the script is not ready for this filename")
 
-    return df, df_target
+    return df, None, df_target, None
+
+def calc_entropy(numers, denom):
+    """calc the entropy for this particular attribute's value"""
+    total_entropy = 0
+    i = 0
+    for numer in numers:
+        p = numers[i] / float(denom)
+        total_entropy = total_entropy - (p * np.log2(p))
+        i = i + 1
+    return total_entropy
+
+def calc_entropies(array_dicts):
+    """calculate the entropy of each attribute"""
+    entropies = []
+    for i_dict in array_dicts:
+        numers = []
+        weight = 0
+        total_weight = 0
+        entropy = 0
+        for key in i_dict:
+            # this will be needed to compute the average entropy between values of attributes
+            weight = len(i_dict[key])
+            for key, value in Counter(i_dict[key]).iteritems():
+                numers.append(value)
+            # make a sum of total entropy
+            entropy = entropy + calc_entropy(numers, weight) * weight
+            total_weight = total_weight + weight
+            numers = []
+        entropy = entropy / float(total_weight)
+        # make a list of our entropies
+        entropies.append(entropy)
+
+    return entropies
 
 def main():
     """everything happens here"""
     args = receive_args().parse_args()
-    df, df_target = prep_data(args)
+    train_data, test_data, train_target, test_target = prep_data(args)
+
+    buckets = []
+    cidx = 0
+    for col in train_data.columns:
+        # store the column index in along with the column name
+        buckets.append({})
+        for ridx, row in train_data[col].iteritems():
+            if row in buckets[cidx]:
+                buckets[cidx][row].append(train_target[ridx])
+            else:
+                buckets[cidx][row] = []
+                buckets[cidx][row].append(train_target[ridx])
+        cidx = cidx + 1
+
+    print calc_entropies(buckets)
 
 main()

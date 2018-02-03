@@ -100,8 +100,8 @@ def calc_entropy(numers, denom):
         i = i + 1
     return total_entropy
 
-def calc_entropies(array_dicts):
-    """calculate the entropy of each attribute"""
+def calc_entropies_aux(array_dicts):
+    """calculate the entropy of each attribute, helper function"""
     entropies = []
     for i_dict in array_dicts:
         numers = []
@@ -123,11 +123,8 @@ def calc_entropies(array_dicts):
 
     return entropies
 
-def main():
-    """everything happens here"""
-    args = receive_args().parse_args()
-    train_data, test_data, train_target, test_target = prep_data(args)
-
+def calc_entropies(train_data, train_target):
+    """calculate the entropy of each attribute"""
     buckets = []
     cidx = 0
     for col in train_data.columns:
@@ -140,7 +137,14 @@ def main():
                 buckets[cidx][row] = []
                 buckets[cidx][row].append(train_target[ridx])
         cidx = cidx + 1
+    
+    return calc_entropies_aux(buckets)
 
-    print calc_entropies(buckets)
+def main():
+    """everything happens here"""
+    args = receive_args().parse_args()
+    train_data, test_data, train_target, test_target = prep_data(args)
+
+    print calc_entropies(train_data, train_target)
 
 main()

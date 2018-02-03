@@ -106,18 +106,18 @@ def calc_entropies_aux(array_dicts):
     for i_dict in array_dicts:
         numers = []
         weight = 0
-        total_weight = 0
-        entropy = 0
+        sum_weight = 0
+        sum_entropy = 0
         for key in i_dict:
             # this will be needed to compute the average entropy between values of attributes
             weight = len(i_dict[key])
             for key, value in Counter(i_dict[key]).iteritems():
                 numers.append(value)
             # make a sum of total entropy
-            entropy = entropy + calc_entropy(numers, weight) * weight
-            total_weight = total_weight + weight
+            sum_entropy = sum_entropy + calc_entropy(numers, weight) * weight
+            sum_weight = sum_weight + weight
             numers = []
-        entropy = entropy / float(total_weight)
+        entropy = sum_entropy / float(sum_weight)
         # make a list of our entropies
         entropies.append(entropy)
 
@@ -137,7 +137,8 @@ def calc_entropies(train_data, train_target):
                 buckets[cidx][row] = []
                 buckets[cidx][row].append(train_target[ridx])
         cidx = cidx + 1
-    
+    # I might want to eventually turn this into a dictionary of column names
+    # with their values as the entropies returned from `calc_entropies_aux`
     return calc_entropies_aux(buckets)
 
 def main():

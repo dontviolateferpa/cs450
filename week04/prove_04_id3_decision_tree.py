@@ -3,6 +3,24 @@
 import argparse
 import pandas as pd
 
+class MyDecisionTreeClassifier():
+    """my class for the Decision Tree"""
+    def __init__(self):
+        pass
+    
+    def fit(self, train_data, train_targets):
+        """fit the data"""
+        return DTCModel(train_data, train_targets)
+
+class DTCModel:
+    _train_data = None
+    _train_targets = None
+
+    def __init__(self, train_data, train_targets):
+        """put the data in the model"""
+        self._train_data = train_data
+        self._train_targets = train_targets
+
 def receive_args():
     """pass arguments to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')

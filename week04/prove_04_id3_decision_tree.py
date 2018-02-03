@@ -3,23 +3,30 @@
 import argparse
 import pandas as pd
 
+COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
+COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
+
 class MyDecisionTreeClassifier:
     """my class for the Decision Tree"""
     def __init__(self):
         pass
     
-    def fit(self, train_data, train_targets):
+    def fit(self, train_data, train_target):
         """fit the data"""
-        return DTCModel(train_data, train_targets)
+        return DTCModel(train_data, train_target)
 
 class DTCModel:
     _train_data = None
-    _train_targets = None
+    _train_target = None
 
-    def __init__(self, train_data, train_targets):
+    def __init__(self, train_data, train_target):
         """put the data in the model"""
         self._train_data = train_data
-        self._train_targets = train_targets
+        self._train_target = train_target
+
+    def predict(self, test_data):
+        """"""
+        pass
 
 def receive_args():
     """pass arguments to the script"""
@@ -34,10 +41,7 @@ def receive_args():
 
 def load_csv_file_class_example(args):
     """open csv file"""
-
-    cols = None
-    cols = ["Credit Score", "Income", "Collateral", "Should Loan"]
-
+    cols = COLS_CLASS_EXAMPLE
     df = pd.io.parsers.read_csv(
         args.csv_file,
         header=None,
@@ -67,11 +71,7 @@ def prep_data(args):
 
 def main():
     """everything happens here"""
-
     args = receive_args().parse_args()
     df, df_target = prep_data(args)
-
-    print df
-
 
 main()

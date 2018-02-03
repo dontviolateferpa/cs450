@@ -3,7 +3,7 @@
 import argparse
 import pandas as pd
 
-class MyDecisionTreeClassifier():
+class MyDecisionTreeClassifier:
     """my class for the Decision Tree"""
     def __init__(self):
         pass

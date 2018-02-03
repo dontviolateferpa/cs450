@@ -147,6 +147,4 @@ def main():
     train_data, test_data, train_target, test_target = prep_data(args)
     model = MyDecisionTreeClassifier().fit(train_data, train_target)
 
-    # print calc_entropies(train_data, train_target)
-
 main()

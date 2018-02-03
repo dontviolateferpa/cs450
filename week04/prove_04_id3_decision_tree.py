@@ -132,14 +132,16 @@ def prep_data_class_example(df):
 
 def prep_data(args):
     """prepare the data from one of the datasets"""
-    df = None
-    df_target = None
+    train_data = None
+    test_data = None
+    train_target = None
+    test_target = None
     if args.csv_file == "id3_class.csv":
-        df, df_target = prep_data_class_example(load_csv_file_class_example(args))
+        train_data, train_target = prep_data_class_example(load_csv_file_class_example(args))
     else:
         raise ValueError("the script is not ready for this filename")
 
-    return df, None, df_target, None
+    return train_data, test_data, train_target, test_target
 
 def main():
     """everything happens here"""

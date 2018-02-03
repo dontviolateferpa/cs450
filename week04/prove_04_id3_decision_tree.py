@@ -126,10 +126,12 @@ def calc_entropies_aux(array_dicts):
 def calc_entropies(train_data, train_target):
     """calculate the entropy of each attribute"""
     buckets = []
+    cols = []
     cidx = 0
     for col in train_data.columns:
         # store the column index in along with the column name
         buckets.append({})
+        cols.append(col)
         for ridx, row in train_data[col].iteritems():
             if row in buckets[cidx]:
                 buckets[cidx][row].append(train_target[ridx])
@@ -137,9 +139,14 @@ def calc_entropies(train_data, train_target):
                 buckets[cidx][row] = []
                 buckets[cidx][row].append(train_target[ridx])
         cidx = cidx + 1
-    # I might want to eventually turn this into a dictionary of column names
-    # with their values as the entropies returned from `calc_entropies_aux`
-    return calc_entropies_aux(buckets)
+    # turn this into a dictionary of column names with their values as the entropies
+    entropies_dict = {}
+    entropies = calc_entropies_aux(buckets)
+    e_count = 0
+    for entropy in entropies:
+        entropies_dict[cols[e_count]] = entropy
+        e_count = e_count + 1
+    return entropies_dict
 
 def main():
     """everything happens here"""

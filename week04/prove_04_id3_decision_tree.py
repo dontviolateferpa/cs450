@@ -2,6 +2,7 @@
 
 import argparse
 import pandas as pd
+from anytree import Node, RenderTree
 
 COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
 COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
@@ -23,6 +24,12 @@ class DTCModel:
         """put the data in the model"""
         self._train_data = train_data
         self._train_target = train_target
+
+        self._make_ID3_tree()
+
+    def _make_ID3_tree():
+        """make the ID3 decision tree"""
+        pass
 
     def predict(self, test_data):
         """"""
@@ -53,6 +60,10 @@ def load_csv_file_class_example(args):
 
 def prep_data_class_example(df):
     """prepare the data for the class example set"""
+    df["Credit Score"] = df["Credit Score"].astype('category').cat.codes
+    df["Income"] = df["Income"].astype('category').cat.codes
+    df["Collateral"] = df["Collateral"].astype('category').cat.codes
+    df["Should Loan"] = df["Should Loan"].astype('category').cat.codes
     df_target = df['Should Loan']
     df.drop(columns=['Should Loan'], inplace=True)
 

@@ -36,7 +36,7 @@ class DTCModel:
         i = 0
         for numer in numers:
             p = numers[i] / float(denom)
-            total_entropy = total_entropy - (p * np.log2(p))
+            total_entropy -= (p * np.log2(p))
             i += 1
         return total_entropy
 

@@ -27,8 +27,8 @@ class DTCModel:
         """put the data in the model"""
         self._train_data = train_data
         self._train_target = train_target
-
-        self._make_ID3_tree()
+        classes = []
+        self._make_ID3_tree([0], self._train_data, self._train_target)
 
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
@@ -37,7 +37,7 @@ class DTCModel:
         for numer in numers:
             p = numers[i] / float(denom)
             total_entropy = total_entropy - (p * np.log2(p))
-            i = i + 1
+            i += 1
         return total_entropy
 
     def _calc_entropies_aux(self, array_dicts):
@@ -54,8 +54,8 @@ class DTCModel:
                 for key, value in Counter(i_dict[key]).iteritems():
                     numers.append(value)
                 # make a sum of total entropy
-                sum_entropy = sum_entropy + self._calc_entropy(numers, weight) * weight
-                sum_weight = sum_weight + weight
+                sum_entropy += self._calc_entropy(numers, weight) * weight
+                sum_weight += weight
                 numers = []
             entropy = sum_entropy / float(sum_weight)
             # make a list of our entropies
@@ -66,31 +66,36 @@ class DTCModel:
     def _calc_entropies(self, train_data, train_target):
         """calculate the entropy of each attribute"""
         buckets = []
-        cols = []
+        feats = []
         cidx = 0
-        for col in train_data.columns:
+        for feat in train_data.columns:
             # store the column index in along with the column name
             buckets.append({})
-            cols.append(col)
-            for ridx, row in train_data[col].iteritems():
+            feats.append(feat)
+            for ridx, row in train_data[feat].iteritems():
                 if row in buckets[cidx]:
                     buckets[cidx][row].append(train_target[ridx])
                 else:
                     buckets[cidx][row] = []
                     buckets[cidx][row].append(train_target[ridx])
-            cidx = cidx + 1
+            cidx += 1
         # turn this into a dictionary of column names with their values as the entropies
         entropies_dict = {}
         entropies = self._calc_entropies_aux(buckets)
         e_count = 0
         for entropy in entropies:
-            entropies_dict[cols[e_count]] = entropy
-            e_count = e_count + 1
+            entropies_dict[feats[e_count]] = entropy
+            e_count += 1
         return entropies_dict
 
-    def _make_ID3_tree(self):
+    def _make_ID3_tree(self, classes, train_data, train_target):
         """make the ID3 decision tree"""
-        print self._calc_entropies(self._train_data, self._train_target)
+        print self._calc_entropies(train_data, train_target)
+        if train_data.empty or len(train_data.columns) == 0:
+            # reached an empty branch
+            None
+        elif classes.count(classes[0]) == train_data.size / len(train_data.columns):
+            return classes[0]
 
     def predict(self, test_data):
         """"""

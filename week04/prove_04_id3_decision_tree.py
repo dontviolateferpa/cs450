@@ -33,11 +33,9 @@ class DTCModel:
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
         total_entropy = 0
-        i = 0
         for numer in numers:
-            p = numers[i] / float(denom)
+            p = numer / float(denom)
             total_entropy -= (p * np.log2(p))
-            i += 1
         return total_entropy
 
     def _calc_entropies_aux(self, array_dicts):

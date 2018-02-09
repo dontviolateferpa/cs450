@@ -38,6 +38,7 @@ class DTCModel:
         for numer in numers:
             p = numer / float(denom)
             total_entropy -= (p * np.log2(p))
+
         return total_entropy
 
     def _calc_entropies_aux(self, array_dicts):
@@ -56,6 +57,8 @@ class DTCModel:
                 # make a sum of total entropy
                 sum_entropy += self._calc_entropy(numers, weight) * weight
                 sum_weight += weight
+                if float(sum(numers)) / weight > 1:
+                    raise ValueError("sum of the numers exceeds size of denom: (%d/%d)" % (sum(numers), weight))
                 numers = []
             entropy = sum_entropy / float(sum_weight)
             # make a list of our entropies
@@ -149,8 +152,13 @@ def load_csv_file_iris(args):
 def prep_data_iris(df):
     """prepare the data for the iris data set"""
     # COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
-    df_target = df['Class']
-    df.drop(columns=['Class'], inplace=True)   
+    df["Class"] = df["Class"].astype('category').cat.codes
+    df["Sepal Length"] = pd.cut(df["Sepal Length"], 3, labels=["Short", "Med", "Tall"])
+    df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Narrow", "Med", "Wide"])
+    df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Tall"])
+    df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Narrow", "Med", "Wide"])
+    df_target = df["Class"]
+    df.drop(columns=["Class"], inplace=True)   
 
     return df, df_target
 
@@ -162,7 +170,7 @@ def prep_data(args):
     test_target = None
     if args.csv_file == "id3_class.csv":
         train_data, train_target = prep_data_class_example(load_csv_file_class_example(args))
-    elif args.csv_file = "iris.csv"
+    elif args.csv_file == "iris.csv":
         train_data, train_target = prep_data_iris(load_csv_file_iris(args))
     else:
         raise ValueError("the script is not ready for this filename")

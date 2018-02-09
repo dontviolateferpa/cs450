@@ -8,6 +8,8 @@ from collections import Counter
 
 COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
 COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
+COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
+COLS_IRIS_TRAIN = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
 
 class MyDecisionTreeClassifier:
     """my class for the Decision Tree"""
@@ -133,6 +135,25 @@ def prep_data_class_example(df):
 
     return df, df_target
 
+def load_csv_file_iris(args):
+    """open csv file"""
+    cols = COLS_IRIS
+    df = pd.io.parsers.read_csv(
+        args.csv_file,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+    return df
+
+def prep_data_iris(df):
+    """prepare the data for the iris data set"""
+    # COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
+    df_target = df['Class']
+    df.drop(columns=['Class'], inplace=True)   
+
+    return df, df_target
+
 def prep_data(args):
     """prepare the data from one of the datasets"""
     train_data = None
@@ -141,6 +162,8 @@ def prep_data(args):
     test_target = None
     if args.csv_file == "id3_class.csv":
         train_data, train_target = prep_data_class_example(load_csv_file_class_example(args))
+    elif args.csv_file = "iris.csv"
+        train_data, train_target = prep_data_iris(load_csv_file_iris(args))
     else:
         raise ValueError("the script is not ready for this filename")
 

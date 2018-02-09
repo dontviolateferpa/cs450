@@ -38,7 +38,7 @@ Represent the tree! You can make a tree anyway you like (object-oriented, a dict
 
 ### Find the entropy
 
-1. Group all target classes under an attribute value
+1. Group all target classes under a feature value
 
 - iterate through each column to do this
 
@@ -89,3 +89,33 @@ Make a `Low` bucket
 | 10    | Low          | No          |
 | 11    | Low          | No          |
 | 12    | Low          | No          |
+
+### Build the Tree
+
+```python
+def build_node(data, feats)
+    """
+    this pseudocode assumes you have made a node class and that the children are represented
+    inside the node as a dictionary
+    """
+    # BASE_CASE if no features left to split on (meaning you get to the end of the tree)
+        # make new leaf node
+        # use most common target for its value
+        # return it
+    # BASE CASE else if all rows in feature have the same target (entropy == 0?)
+        # make new leaf node with that target
+        # return it
+    # BASE CASE no rows at all
+        # ...
+    # REAL LOGIC/MEAT: see how each feature/feature would split the data
+        # choose the one with the lowest entropy
+# possible_values = get possible values for feature
+    for possible_value in possible_values:
+        # data_subset = get rows from data where feature == possible_value, i.e. where gender=='M'
+        data_subset = get_rows("logic in here")
+        #### MAKE SURE TARGETS STAY LINED UP ####
+        # node = build a node
+        node = build_node("logic in here")
+        current_node.children[possible_value] = node
+    pass
+```

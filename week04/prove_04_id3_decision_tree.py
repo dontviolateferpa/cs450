@@ -221,22 +221,22 @@ def main():
     # print RenderTree(n)
 
     # what the class example should look like
-    print "\n--> CLASS EXAMPLE BY HAND <--"
-    z = Node("", parent=None, feat="Income")
-    child_a1 = Node("High", parent=z)
-    child_a2 = Node("Low", parent=z)
-    child_a1.feat="Credit Score"
-    child_b1 = Node("Good", parent=child_a1)
-    child_b2 = Node("Average", parent=child_a1)
-    child_b3 = Node("Low", parent=child_a1)
-    child_b3.feat="Collateral"
-    child_c1 = Node("Good", parent=child_b3)
-    child_c2 = Node("Poor", parent=child_b3)
-    child_c1.target="Yes"
-    child_c2.target="No"
-    child_b1.target="Yes"
-    child_b2.target="Yes"
-    print RenderTree(z)
+    # print "\n--> CLASS EXAMPLE BY HAND <--"
+    # z = Node("", parent=None, feat="Income")
+    # child_a1 = Node("High", parent=z)
+    # child_a2 = Node("Low", parent=z)
+    # child_a1.feat="Credit Score"
+    # child_b1 = Node("Good", parent=child_a1)
+    # child_b2 = Node("Average", parent=child_a1)
+    # child_b3 = Node("Low", parent=child_a1)
+    # child_b3.feat="Collateral"
+    # child_c1 = Node("Good", parent=child_b3)
+    # child_c2 = Node("Poor", parent=child_b3)
+    # child_c1.target="Yes"
+    # child_c2.target="No"
+    # child_b1.target="Yes"
+    # child_b2.target="Yes"
+    # print RenderTree(z)
 
 
 main()

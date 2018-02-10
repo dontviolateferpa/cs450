@@ -1,0 +1,8 @@
+Node('/', feat='Income')
+|-------- Node('//High', feat='Credit Score')
+|     |-------- Node('//High/Good', target='Yes')
+|     |-------- Node('//High/Average', target='Yes')
+|     |-------- Node('//High/Low', feat='Collateral')
+|         |-------- Node('//High/Low/Good', target='Yes')
+|         |-------- Node('//High/Low/Poor', target='No')
+|-------- Node('//Low')

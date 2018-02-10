@@ -30,7 +30,7 @@ class DTCModel:
         self._train_data = train_data
         self._train_target = train_target
         classes = []
-        self._make_ID3_tree([0], self._train_data, self._train_target)
+        self._make_ID3_tree(self._train_data, self._train_target, None)
 
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
@@ -91,14 +91,16 @@ class DTCModel:
             e_count += 1
         return entropies_dict
 
-    def _make_ID3_tree(self, classes, train_data, train_target):
+    def _make_ID3_tree(self, train_data, train_target, node):
         """make the ID3 decision tree"""
         print self._calc_entropies(train_data, train_target)
         if train_data.empty or len(train_data.columns) == 0:
-            # reached an empty branch
-            None
-        elif classes.count(classes[0]) == train_data.size / len(train_data.columns):
-            return classes[0]
+            return Node("leaf", parent=node, value=train_data.value_counts().idmax())
+        # elif classes.count(classes[0]) == train_data.size / len(train_data.columns):
+        #     return None
+
+        # train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+        return node
 
     def predict(self, test_data):
         """"""
@@ -129,10 +131,10 @@ def load_csv_file_class_example(args):
 
 def prep_data_class_example(df):
     """prepare the data for the class example set"""
-    df["Credit Score"] = df["Credit Score"].astype('category').cat.codes
-    df["Income"] = df["Income"].astype('category').cat.codes
-    df["Collateral"] = df["Collateral"].astype('category').cat.codes
-    df["Should Loan"] = df["Should Loan"].astype('category').cat.codes
+    df["Credit Score"] = df["Credit Score"]
+    df["Income"] = df["Income"]
+    df["Collateral"] = df["Collateral"]
+    df["Should Loan"] = df["Should Loan"]
     df_target = df['Should Loan']
     df.drop(columns=['Should Loan'], inplace=True)
 
@@ -151,8 +153,6 @@ def load_csv_file_iris(args):
 
 def prep_data_iris(df):
     """prepare the data for the iris data set"""
-    # COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
-    df["Class"] = df["Class"].astype('category').cat.codes
     df["Sepal Length"] = pd.cut(df["Sepal Length"], 3, labels=["Short", "Med", "Tall"])
     df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Narrow", "Med", "Wide"])
     df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Tall"])
@@ -177,10 +177,40 @@ def prep_data(args):
 
     return train_data, test_data, train_target, test_target
 
+def test_node(parent, name):
+
+    return Node(name, parent=parent)
+
 def main():
     """everything happens here"""
     args = receive_args().parse_args()
     train_data, test_data, train_target, test_target = prep_data(args)
     model = MyDecisionTreeClassifier().fit(train_data, train_target)
+
+    # n = Node("n")
+    # a = test_node(n, "a")
+    # b = test_node(n, "b")
+    # c = test_node(b, "c")
+
+    # print RenderTree(n)
+
+    # what the class example should look like
+    print "\n--> CLASS EXAMPLE BY HAND <--"
+    z = Node("", parent=None, feat="Income")
+    child_a1 = Node("High", parent=z)
+    child_a2 = Node("Low", parent=z)
+    child_a1.feat="Credit Score"
+    child_b1 = Node("Good", parent=child_a1)
+    child_b2 = Node("Average", parent=child_a1)
+    child_b3 = Node("Low", parent=child_a1)
+    child_b3.feat="Collateral"
+    child_c1 = Node("Good", parent=child_b3)
+    child_c2 = Node("Poor", parent=child_b3)
+    child_c1.target="Yes"
+    child_c2.target="No"
+    child_b1.target="Yes"
+    child_b2.target="Yes"
+    print RenderTree(z)
+
 
 main()

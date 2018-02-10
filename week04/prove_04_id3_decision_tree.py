@@ -24,11 +24,13 @@ class DTCModel:
     _train_data = None
     _train_target = None
     _tree = None
+    _target_feature = None
 
     def __init__(self, train_data, train_target):
         """put the data in the model"""
         self._train_data = train_data
         self._train_target = train_target
+        self._target_feature = train_target.to_frame().columns[0]
         classes = []
         self._make_ID3_tree(self._train_data, self._train_target, None, "root")
 
@@ -95,26 +97,36 @@ class DTCModel:
         """make the ID3 decision tree"""
         print self._calc_entropies(train_data, train_target)
         # if there are no features left to split on
-        if len(train_data.columns) == 1:
-            return Node(value, parent=node, target=train_data.value_counts().idxmax(), feat=None)
+        if len(train_data.columns) == 0:
+            return Node(value, parent=node, target=train_data.mode(), feat=None)
         # if all rows in feature have the same target (entropy == 0)
         elif train_target[train_target == train_target[0]].count() == train_data.size / len(train_data.columns):
             return Node(value, parent=node, target=train_target[0], feat=None)
-        elif train_data.empty:
-            raise ValueError("haven't reached this case yet")
         else:
             entropies = self._calc_entropies(train_data, train_target)
             # find the lowest value in the key-value pairs
             feat_max_info_gain = min(entropies, key=entropies.get)
             print feat_max_info_gain
             n = Node(value, parent=node, feat=feat_max_info_gain)
+            # get all unique possible values of a feature
             feat_values = train_data[feat_max_info_gain].unique()
-            df_copy = train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+            df_joined = train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+            print feat_values
             # need target-values column name... maybe store as a member variable
             # need the column names from train_data... store those somewhere
             for value in feat_values:
-                pass
-        return node
+                df_joined_subset = df_joined[df_joined[feat_max_info_gain] == value]
+                df_joined_target = df_joined[self._target_feature]
+                df_joined_subset.drop(columns=[self._target_feature, feat_max_info_gain], inplace=True)
+                print "print df_joined_target"
+                print df_joined_target
+                print "print df_joined_subset"
+                print df_joined_subset
+                self._make_ID3_tree(df_joined_subset, df_joined_target, n, value)
+
+        print RenderTree(n)
+        return n
+        # raise ValueError("missed something here")
 
     def predict(self, test_data):
         """"""

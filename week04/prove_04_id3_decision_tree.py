@@ -30,7 +30,7 @@ class DTCModel:
         self._train_data = train_data
         self._train_target = train_target
         classes = []
-        self._make_ID3_tree(self._train_data, self._train_target, None)
+        self._make_ID3_tree(self._train_data, self._train_target, None, "root")
 
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
@@ -91,15 +91,29 @@ class DTCModel:
             e_count += 1
         return entropies_dict
 
-    def _make_ID3_tree(self, train_data, train_target, node):
+    def _make_ID3_tree(self, train_data, train_target, node, value):
         """make the ID3 decision tree"""
         print self._calc_entropies(train_data, train_target)
-        if train_data.empty or len(train_data.columns) == 0:
-            return Node("leaf", parent=node, value=train_data.value_counts().idmax())
-        # elif classes.count(classes[0]) == train_data.size / len(train_data.columns):
-        #     return None
-
-        # train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+        # if there are no features left to split on
+        if len(train_data.columns) == 1:
+            return Node(value, parent=node, target=train_data.value_counts().idxmax(), feat=None)
+        # if all rows in feature have the same target (entropy == 0)
+        elif train_target[train_target == train_target[0]].count() == train_data.size / len(train_data.columns):
+            return Node(value, parent=node, target=train_target[0], feat=None)
+        elif train_data.empty:
+            raise ValueError("haven't reached this case yet")
+        else:
+            entropies = self._calc_entropies(train_data, train_target)
+            # find the lowest value in the key-value pairs
+            feat_max_info_gain = min(entropies, key=entropies.get)
+            print feat_max_info_gain
+            n = Node(value, parent=node, feat=feat_max_info_gain)
+            feat_values = train_data[feat_max_info_gain].unique()
+            df_copy = train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+            # need target-values column name... maybe store as a member variable
+            # need the column names from train_data... store those somewhere
+            for value in feat_values:
+                pass
         return node
 
     def predict(self, test_data):

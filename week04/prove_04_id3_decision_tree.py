@@ -3,8 +3,12 @@
 import argparse
 import pandas as pd
 import numpy as np
-from anytree import Node, RenderTree
+from anytree import Node, RenderTree, PreOrderIter, LevelOrderGroupIter
+from anytree.exporter import DictExporter
+from anytree import find
 from collections import Counter
+from sklearn.model_selection import train_test_split
+import search
 
 COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
 COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
@@ -32,7 +36,7 @@ class DTCModel:
         self._train_target = train_target
         self._target_feature = train_target.to_frame().columns[0]
         classes = []
-        self._make_ID3_tree(self._train_data, self._train_target, None, "root")
+        self._tree = self._make_ID3_tree(self._train_data, self._train_target, None, "root")
 
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
@@ -95,42 +99,53 @@ class DTCModel:
 
     def _make_ID3_tree(self, train_data, train_target, node, value):
         """make the ID3 decision tree"""
-        print self._calc_entropies(train_data, train_target)
         # if there are no features left to split on
         if len(train_data.columns) == 0:
-            return Node(value, parent=node, target=train_data.mode(), feat=None)
+            return Node(value, parent=node, target=train_target.mode().as_matrix()[0], feat=None)
         # if all rows in feature have the same target (entropy == 0)
-        elif train_target[train_target == train_target[0]].count() == train_data.size / len(train_data.columns):
-            return Node(value, parent=node, target=train_target[0], feat=None)
+        elif train_target[train_target == train_target.as_matrix()[0]].count() == len(train_target):
+            return Node(value, parent=node, target=train_target.as_matrix()[0], feat=None)
         else:
             entropies = self._calc_entropies(train_data, train_target)
             # find the lowest value in the key-value pairs
             feat_max_info_gain = min(entropies, key=entropies.get)
-            print feat_max_info_gain
             n = Node(value, parent=node, feat=feat_max_info_gain)
             # get all unique possible values of a feature
             feat_values = train_data[feat_max_info_gain].unique()
             df_joined = train_data.join(train_target, lsuffix='_data', rsuffix="_target")
-            print feat_values
-            # need target-values column name... maybe store as a member variable
-            # need the column names from train_data... store those somewhere
             for value in feat_values:
                 df_joined_subset = df_joined[df_joined[feat_max_info_gain] == value]
-                df_joined_target = df_joined[self._target_feature]
+                df_joined_target_subset = df_joined_subset[self._target_feature]
                 df_joined_subset.drop(columns=[self._target_feature, feat_max_info_gain], inplace=True)
-                print "print df_joined_target"
-                print df_joined_target
-                print "print df_joined_subset"
-                print df_joined_subset
-                self._make_ID3_tree(df_joined_subset, df_joined_target, n, value)
-
-        print RenderTree(n)
+                self._make_ID3_tree(df_joined_subset, df_joined_target_subset, n, value)
         return n
-        # raise ValueError("missed something here")
+
+    def _get_class(self, row, dict_tree):
+        """get the class of a row in a dataframe"""
+        node = self._tree
+        while not node.is_leaf:
+            old_node = node
+            for temp_node in node.children:
+            # new_node = find(node, lambda n: n.name == row[node.feat], maxlevel=1)
+                if row[node.feat] == temp_node.name:
+                    node = temp_node
+                    break
+            if node == old_node:
+                print "HIT THIS CONDITION :O"
+                print node.path
+                return self._train_target.as_matrix()[0]
+        
+        return node.target
 
     def predict(self, test_data):
-        """"""
-        pass
+        """predict the classes of the test data"""
+        predicted_targets = []
+        exporter = DictExporter()
+        root = exporter.export(self._tree)
+        for idx, row in test_data.iterrows():
+            predicted_targets.append(self._get_class(row, root))
+        
+        return predicted_targets
 
 def receive_args():
     """pass arguments to the script"""
@@ -190,21 +205,28 @@ def prep_data_iris(df):
 
 def prep_data(args):
     """prepare the data from one of the datasets"""
-    train_data = None
-    test_data = None
-    train_target = None
-    test_target = None
+    df_data = None
+    df_target = None
     if args.csv_file == "id3_class.csv":
-        train_data, train_target = prep_data_class_example(load_csv_file_class_example(args))
+        df_data, df_target = prep_data_class_example(load_csv_file_class_example(args))
     elif args.csv_file == "iris.csv":
-        train_data, train_target = prep_data_iris(load_csv_file_iris(args))
+        df_data, df_target = prep_data_iris(load_csv_file_iris(args))
     else:
         raise ValueError("the script is not ready for this filename")
 
+    train_data, test_data, train_target, test_target = train_test_split(df_data, df_target, test_size=0.3)
     return train_data, test_data, train_target, test_target
 
-def test_node(parent, name):
+def display_similarity(predictions, targets_test, method):
+    """display the similarity between two arrays"""
+    sim_score = 0
+    count = 0
+    for x in predictions:
+        if x == targets_test[count]:
+            sim_score = sim_score + 1
+    print "The two are " + str(float(sim_score) / float(len(predictions))) + " percent similar (" + method + ")"
 
+def test_node(parent, name):
     return Node(name, parent=parent)
 
 def main():
@@ -212,7 +234,10 @@ def main():
     args = receive_args().parse_args()
     train_data, test_data, train_target, test_target = prep_data(args)
     model = MyDecisionTreeClassifier().fit(train_data, train_target)
-
+    predicted_targets = model.predict(test_data)
+    print predicted_targets
+    display_similarity(predicted_targets, test_target, "Decision Tree")
+    
     # n = Node("n")
     # a = test_node(n, "a")
     # b = test_node(n, "b")
@@ -237,6 +262,5 @@ def main():
     # child_b1.target="Yes"
     # child_b2.target="Yes"
     # print RenderTree(z)
-
 
 main()

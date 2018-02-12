@@ -103,15 +103,11 @@ class DTCModel:
         """make the ID3 decision tree"""
         # if there are no features left to split on
         if len(train_data.columns) == 0:
-            print "are these two the same?"
             if train_data.size == 0:
-                print "HIT THIS CONDITION. :O"
-                print "\ttrain_data.size == 0"
             return Node(value, parent=node, target=train_target.mode().as_matrix()[0], feat=None)
         # if all rows in feature have the same target (entropy == 0)
         elif train_target[train_target == train_target.as_matrix()[0]].count() == len(train_target):
             return Node(value, parent=node, target=train_target.as_matrix()[0], feat=None)
-            print "BOOOOOOOOOOOOOOOOOOOOOOOOOOOOM. WE HIT THIS."
         else:
             entropies = self._calc_entropies(train_data, train_target)
             # find the lowest value in the key-value pairs
@@ -130,22 +126,6 @@ class DTCModel:
     def _get_class(self, row):
         """get the class of a row in a dataframe"""
         node = self._tree
-        # while not node.is_leaf:
-        #     old_node = node
-        #     for temp_node in node.children:
-        #     # new_node = find(node, lambda n: n.name == row[node.feat], maxlevel=1)
-        #         if row[node.feat] == temp_node.name:
-        #             print "the " + node.feat + " is " + temp_node.name
-        #             print node.children
-        #             node = temp_node
-        #             break
-        #     if node == old_node:
-        #         print "HIT THIS CONDITION :O"
-        #         print node.path
-        #         return self._train_target[node.feat].unique()[0]
-        # print "\tso we predict " + node.target
-        print "THE ROW WE WILL PREDICT"
-        print row
         r = Resolver('name')
         while not node.is_leaf:
             if node.feat != None:
@@ -240,7 +220,6 @@ def display_similarity(predictions, targets_test, method):
     if type(predictions) is pd.DataFrame():
         predictions = predictions.as_matrix()
     sm=difflib.SequenceMatcher(None, predictions, targets_test)
-    print targets_test
     print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
 
 def test_node(parent, name):
@@ -252,7 +231,6 @@ def main():
     train_data, test_data, train_target, test_target = prep_data(args)
     model = MyDecisionTreeClassifier().fit(train_data, train_target)
     predicted_targets = model.predict(test_data)
-    print predicted_targets
     display_similarity(predicted_targets, test_target, "Decision Tree")
     
     # n = Node("n")

@@ -1,9 +1,10 @@
 """Implement ID3 algorithm to make a decision tree"""
 
 import argparse
+import difflib
 import pandas as pd
 import numpy as np
-from anytree import Node, RenderTree, PreOrderIter, LevelOrderGroupIter
+from anytree import Node, RenderTree, AsciiStyle, Walker, LevelOrderIter, Resolver
 from anytree.exporter import DictExporter
 from anytree import find
 from collections import Counter
@@ -37,6 +38,7 @@ class DTCModel:
         self._target_feature = train_target.to_frame().columns[0]
         classes = []
         self._tree = self._make_ID3_tree(self._train_data, self._train_target, None, "root")
+        print RenderTree(self._tree, style=AsciiStyle())
 
     def _calc_entropy(self, numers, denom):
         """calc the entropy for this particular attribute's value"""
@@ -101,10 +103,15 @@ class DTCModel:
         """make the ID3 decision tree"""
         # if there are no features left to split on
         if len(train_data.columns) == 0:
+            print "are these two the same?"
+            if train_data.size == 0:
+                print "HIT THIS CONDITION. :O"
+                print "\ttrain_data.size == 0"
             return Node(value, parent=node, target=train_target.mode().as_matrix()[0], feat=None)
         # if all rows in feature have the same target (entropy == 0)
         elif train_target[train_target == train_target.as_matrix()[0]].count() == len(train_target):
             return Node(value, parent=node, target=train_target.as_matrix()[0], feat=None)
+            print "BOOOOOOOOOOOOOOOOOOOOOOOOOOOOM. WE HIT THIS."
         else:
             entropies = self._calc_entropies(train_data, train_target)
             # find the lowest value in the key-value pairs
@@ -120,30 +127,41 @@ class DTCModel:
                 self._make_ID3_tree(df_joined_subset, df_joined_target_subset, n, value)
         return n
 
-    def _get_class(self, row, dict_tree):
+    def _get_class(self, row):
         """get the class of a row in a dataframe"""
         node = self._tree
+        # while not node.is_leaf:
+        #     old_node = node
+        #     for temp_node in node.children:
+        #     # new_node = find(node, lambda n: n.name == row[node.feat], maxlevel=1)
+        #         if row[node.feat] == temp_node.name:
+        #             print "the " + node.feat + " is " + temp_node.name
+        #             print node.children
+        #             node = temp_node
+        #             break
+        #     if node == old_node:
+        #         print "HIT THIS CONDITION :O"
+        #         print node.path
+        #         return self._train_target[node.feat].unique()[0]
+        # print "\tso we predict " + node.target
+        print "THE ROW WE WILL PREDICT"
+        print row
+        r = Resolver('name')
         while not node.is_leaf:
-            old_node = node
-            for temp_node in node.children:
-            # new_node = find(node, lambda n: n.name == row[node.feat], maxlevel=1)
-                if row[node.feat] == temp_node.name:
-                    node = temp_node
-                    break
-            if node == old_node:
-                print "HIT THIS CONDITION :O"
-                print node.path
-                return self._train_target.as_matrix()[0]
-        
+            if node.feat != None:
+                print "the " + node.feat + " is " + row[node.feat]
+                n = r.get(node, row[node.feat])
+                node = n
+        print "\tso WE predict " + node.target
         return node.target
 
     def predict(self, test_data):
         """predict the classes of the test data"""
         predicted_targets = []
-        exporter = DictExporter()
-        root = exporter.export(self._tree)
+        # exporter = DictExporter()
+        # root = exporter.export(self._tree)
         for idx, row in test_data.iterrows():
-            predicted_targets.append(self._get_class(row, root))
+            predicted_targets.append(self._get_class(row))
         
         return predicted_targets
 
@@ -219,12 +237,11 @@ def prep_data(args):
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    sim_score = 0
-    count = 0
-    for x in predictions:
-        if x == targets_test[count]:
-            sim_score = sim_score + 1
-    print "The two are " + str(float(sim_score) / float(len(predictions))) + " percent similar (" + method + ")"
+    if type(predictions) is pd.DataFrame():
+        predictions = predictions.as_matrix()
+    sm=difflib.SequenceMatcher(None, predictions, targets_test)
+    print targets_test
+    print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
 
 def test_node(parent, name):
     return Node(name, parent=parent)

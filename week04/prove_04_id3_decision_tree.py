@@ -12,17 +12,13 @@ from sklearn.model_selection import train_test_split
 import search
 
 COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
-COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
 COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
-COLS_IRIS_TRAIN = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
 COLS_VOTING = ["Class Name", "handicapped-infants", "water-project-cost-sharing", "adoption-of-the-budget-resolution", "physician-fee-freeze",
           "el-salvador-aid", "religious-groups-in-schools", "anti-satellite-test-ban", "aid-to-nicaraguan-contras", "mx-missile",
           "immigration", "synfuels-corporation-cutback", "education-spending", "superfund-right-to-sue", "crime", "duty-free-exports",
           "export-administration-act-south-africa"]
-COLS_VOTING_TRAIN = ["handicapped-infants", "water-project-cost-sharing", "adoption-of-the-budget-resolution", "physician-fee-freeze",
-          "el-salvador-aid", "religious-groups-in-schools", "anti-satellite-test-ban", "aid-to-nicaraguan-contras", "mx-missile",
-          "immigration", "synfuels-corporation-cutback", "education-spending", "superfund-right-to-sue", "crime", "duty-free-exports",
-          "export-administration-act-south-africa"]
+COLS_CHESS = ["White King file (column)", "White King rank (row)", "White Rook file", "White Rook rank", "Black King file", "Black King rank",
+             "optimal depth-of-win for White in 0 to 16 moves"]
 
 class MyDecisionTreeClassifier:
     """my class for the Decision Tree"""
@@ -171,7 +167,7 @@ def receive_args():
     parser.add_argument('--csv_file',
                         dest='csv_file',
                         action='store',
-                        choices=["id3_class.csv", "iris.csv", "voting.csv"],
+                        choices=["id3_class.csv", "iris.csv", "voting.csv", "chess.csv"],
                         required=True)
 
     return parser
@@ -235,7 +231,7 @@ def load_csv_file_voting(args):
 def prep_data_voting(df):
     """prepare the data for the voting dataset"""
     # something interesting to note about this dataset is that "?" is not necessarily
-    # a missing value that needs to be imputed, as noted by the UCI Machine Learning
+    # a missing value that needs to be imputed as noted by the UCI Machine Learning
     # Repository
     df_target = df["Class Name"]
     df.drop(columns=["Class Name"], inplace=True)

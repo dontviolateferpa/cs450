@@ -103,11 +103,12 @@ class DTCModel:
         """make the ID3 decision tree"""
         # if there are no features left to split on
         if len(train_data.columns) == 0:
-            if train_data.size == 0:
             return Node(value, parent=node, target=train_target.mode().as_matrix()[0], feat=None)
         # if all rows in feature have the same target (entropy == 0)
         elif train_target[train_target == train_target.as_matrix()[0]].count() == len(train_target):
             return Node(value, parent=node, target=train_target.as_matrix()[0], feat=None)
+        elif len(train_data.index) == 0:
+            raise ValueError("we have not handled this base case yet")
         else:
             entropies = self._calc_entropies(train_data, train_target)
             # find the lowest value in the key-value pairs
@@ -115,7 +116,20 @@ class DTCModel:
             n = Node(value, parent=node, feat=feat_max_info_gain)
             # get all unique possible values of a feature
             feat_values = train_data[feat_max_info_gain].unique()
-            df_joined = train_data.join(train_target, lsuffix='_data', rsuffix="_target")
+            fv_array = []
+            potential_feat_values = self._train_data[feat_max_info_gain].unique()
+            pfv_array = []
+            # make up targets for datapoints the training set does not have
+            for val in feat_values:
+                fv_array.append(val)
+            for val in potential_feat_values:
+                pfv_array.append(val)
+            missing_feat_values = list(set(pfv_array) - set(fv_array))
+            whole_df_joined = self._train_data.join(self._train_target, lsuffix='_data', rsuffix='_target')
+            for missing_value in missing_feat_values:
+                # this is where we make up the target
+                child = Node(missing_value, parent=n, target=whole_df_joined[whole_df_joined[feat_max_info_gain] == missing_value][train_target.to_frame().columns[0]].mode()[0])
+            df_joined = train_data.join(train_target, lsuffix='_data', rsuffix='_target')
             for value in feat_values:
                 df_joined_subset = df_joined[df_joined[feat_max_info_gain] == value]
                 df_joined_target_subset = df_joined_subset[self._target_feature]
@@ -132,14 +146,12 @@ class DTCModel:
                 print "the " + node.feat + " is " + row[node.feat]
                 n = r.get(node, row[node.feat])
                 node = n
-        print "\tso WE predict " + node.target
+        print "\tso we predict " + node.target
         return node.target
 
     def predict(self, test_data):
         """predict the classes of the test data"""
         predicted_targets = []
-        # exporter = DictExporter()
-        # root = exporter.export(self._tree)
         for idx, row in test_data.iterrows():
             predicted_targets.append(self._get_class(row))
         
@@ -196,6 +208,7 @@ def prep_data_iris(df):
     df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Narrow", "Med", "Wide"])
     df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Tall"])
     df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Narrow", "Med", "Wide"])
+    df.to_csv('iris-df.csv')
     df_target = df["Class"]
     df.drop(columns=["Class"], inplace=True)   
 
@@ -217,8 +230,10 @@ def prep_data(args):
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    if type(predictions) is pd.DataFrame():
+    if isinstance(predictions, pd.DataFrame) or isinstance(predictions, pd.Series):
         predictions = predictions.as_matrix()
+    if isinstance(targets_test, pd.DataFrame) or isinstance(targets_test, pd.Series):
+        targets_test = targets_test.as_matrix()
     sm=difflib.SequenceMatcher(None, predictions, targets_test)
     print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
 

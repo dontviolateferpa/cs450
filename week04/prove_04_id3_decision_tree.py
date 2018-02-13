@@ -204,10 +204,10 @@ def load_csv_file_iris(args):
 
 def prep_data_iris(df):
     """prepare the data for the iris data set"""
-    df["Sepal Length"] = pd.cut(df["Sepal Length"], 3, labels=["Short", "Med", "Tall"])
-    df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Narrow", "Med", "Wide"])
-    df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Tall"])
-    df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Narrow", "Med", "Wide"])
+    df["Sepal Length"] = pd.cut(df["Sepal Length"], 3, labels=["Short", "Med", "Long"])
+    df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Thin", "Med", "Thick"])
+    df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Long"])
+    df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Thin", "Med", "Thick"])
     df.to_csv('iris-df.csv')
     df_target = df["Class"]
     df.drop(columns=["Class"], inplace=True)   

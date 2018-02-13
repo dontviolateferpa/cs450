@@ -208,7 +208,6 @@ def prep_data_iris(df):
     df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Thin", "Med", "Thick"])
     df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Long"])
     df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Thin", "Med", "Thick"])
-    df.to_csv('iris-df.csv')
     df_target = df["Class"]
     df.drop(columns=["Class"], inplace=True)   
 

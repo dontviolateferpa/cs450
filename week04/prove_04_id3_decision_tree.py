@@ -15,6 +15,14 @@ COLS_CLASS_EXAMPLE = ["Credit Score", "Income", "Collateral", "Should Loan"]
 COLS_CLASS_EXAMPLE_TRAIN = ["Credit Score", "Income", "Collateral"]
 COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
 COLS_IRIS_TRAIN = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+COLS_VOTING = ["Class Name", "handicapped-infants", "water-project-cost-sharing", "adoption-of-the-budget-resolution", "physician-fee-freeze",
+          "el-salvador-aid", "religious-groups-in-schools", "anti-satellite-test-ban", "aid-to-nicaraguan-contras", "mx-missile",
+          "immigration", "synfuels-corporation-cutback", "education-spending", "superfund-right-to-sue", "crime", "duty-free-exports",
+          "export-administration-act-south-africa"]
+COLS_VOTING_TRAIN = ["handicapped-infants", "water-project-cost-sharing", "adoption-of-the-budget-resolution", "physician-fee-freeze",
+          "el-salvador-aid", "religious-groups-in-schools", "anti-satellite-test-ban", "aid-to-nicaraguan-contras", "mx-missile",
+          "immigration", "synfuels-corporation-cutback", "education-spending", "superfund-right-to-sue", "crime", "duty-free-exports",
+          "export-administration-act-south-africa"]
 
 class MyDecisionTreeClassifier:
     """my class for the Decision Tree"""
@@ -163,7 +171,7 @@ def receive_args():
     parser.add_argument('--csv_file',
                         dest='csv_file',
                         action='store',
-                        choices=["id3_class.csv", "iris.csv"],
+                        choices=["id3_class.csv", "iris.csv", "voting.csv"],
                         required=True)
 
     return parser
@@ -192,7 +200,7 @@ def prep_data_class_example(df):
     return df, df_target
 
 def load_csv_file_iris(args):
-    """open csv file"""
+    """open csv file for iris"""
     cols = COLS_IRIS
     df = pd.io.parsers.read_csv(
         args.csv_file,
@@ -203,13 +211,34 @@ def load_csv_file_iris(args):
     return df
 
 def prep_data_iris(df):
-    """prepare the data for the iris data set"""
+    """prepare the data for the iris dataset"""
     df["Sepal Length"] = pd.cut(df["Sepal Length"], 3, labels=["Short", "Med", "Long"])
     df["Sepal Width"] = pd.cut(df["Sepal Width"], 3, labels=["Thin", "Med", "Thick"])
     df["Petal Length"] = pd.cut(df["Petal Length"], 3, labels=["Short", "Med", "Long"])
     df["Petal Width"] = pd.cut(df["Petal Width"], 3, labels=["Thin", "Med", "Thick"])
     df_target = df["Class"]
     df.drop(columns=["Class"], inplace=True)   
+
+    return df, df_target
+
+def load_csv_file_voting(args):
+    """open csv file for voting"""
+    cols = COLS_VOTING
+    df = pd.io.parsers.read_csv(
+        args.csv_file,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+    return df
+
+def prep_data_voting(df):
+    """prepare the data for the voting dataset"""
+    # something interesting to note about this dataset is that "?" is not necessarily
+    # a missing value that needs to be imputed, as noted by the UCI Machine Learning
+    # Repository
+    df_target = df["Class Name"]
+    df.drop(columns=["Class Name"], inplace=True)
 
     return df, df_target
 
@@ -221,6 +250,8 @@ def prep_data(args):
         df_data, df_target = prep_data_class_example(load_csv_file_class_example(args))
     elif args.csv_file == "iris.csv":
         df_data, df_target = prep_data_iris(load_csv_file_iris(args))
+    elif args.csv_file == "voting.csv":
+        df_data, df_target = prep_data_voting(load_csv_file_voting(args))
     else:
         raise ValueError("the script is not ready for this filename")
 

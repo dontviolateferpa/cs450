@@ -20,6 +20,7 @@ class Network:
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
+        self.bias = -1
         
 
 def receive_args():
@@ -42,6 +43,10 @@ def check_args(args):
     """make sure the arguments passed by the user are valid"""
     if len(args.sizes) > 3:
         raise ValueError("too many layers for network--must be equal to or less than 3")
+    for size in args.sizes:
+        if size < 1:
+            raise ValueError("incorrect number of nodes for a layer in the network--" +
+                             "value must be greater than or equal to 1")
 
 def main():
     """where the magic happens"""

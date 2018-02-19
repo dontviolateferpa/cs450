@@ -21,7 +21,10 @@ class Network:
         self.sizes = sizes
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
         self.bias = -1
-        
+
+def sigmoid(v):
+    """sigmoid function"""
+    return 1/(1 + np.exp(-v))
 
 def receive_args():
     """receive arguments from the user pass to the script"""
@@ -53,5 +56,6 @@ def main():
     """where the magic happens"""
     args = receive_args().parse_args()
     check_args(args)
+    n = Network(args.sizes)
 
 main()

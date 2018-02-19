@@ -15,7 +15,7 @@ class Network:
         """initialize the class"""
         # a "size" in the list of sizes specifies the number of neurons in each layer
         # of the network
-        # the following three lines of code are from:
+        # the next three lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         self.num_layers = len(sizes)
         self.sizes = sizes
@@ -35,7 +35,8 @@ def receive_args():
                         dest='sizes',
                         action='store',
                         required=True,
-                        nargs='+')
+                        nargs='+',
+                        type=int)
 
     return parser
 

@@ -7,6 +7,10 @@ dataset.
 
 import argparse
 import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
 
 class Network:
     """the Network contains nodes"""
@@ -21,10 +25,14 @@ class Network:
         self.sizes = sizes
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
         self.bias = -1
-
+    
 def sigmoid(v):
     """sigmoid function"""
     return 1/(1 + np.exp(-v))
+
+def sigmoid_prime(v):
+    """sigmoid prime function"""
+    return sigmoid(v)*(1-sigmoid(v))
 
 def receive_args():
     """receive arguments from the user pass to the script"""
@@ -51,6 +59,46 @@ def check_args(args):
         if size < 1:
             raise ValueError("incorrect number of nodes for a layer in the network--" +
                              "value must be greater than or equal to 1")
+
+def load_csv_file_pima(args):
+    """open csv file for pima indian dataset"""
+    return None, None
+
+def prep_data_pima(df):
+    """pepare the data for the pima indian dataset"""
+    return None, None
+
+def load_csv_file_iris(args):
+    """open csv file for iris dataset"""
+    cols = COLS_IRIS
+    df = pd.io.parsers.read_csv(
+        args.csv_file,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+    return df
+
+def prep_data_iris(df):
+    """prepare the data for the iris dataset"""
+    df_target = df["Class"]
+    df.drop(columns=["Class"], inplace=True)   
+
+    return df, df_target
+
+def prep_data(args):
+    """prepare the data from one of the datasets"""
+    df_data = None
+    df_target = None
+    if args.csv_file == "iris.csv":
+        df_data, df_target = prep_data_iris(load_csv_file_iris(args))
+    elif args.csv_file == "pima.csv":
+        df_data, df_target = prep_data_pima(load_csv_file_pima(args))
+    else:
+        raise ValueError("the script is not ready for this filename")
+
+    train_data, test_data, train_target, test_target = train_test_split(df_data, df_target, test_size=0.3)
+    return train_data, test_data, train_target, test_target
 
 def main():
     """where the magic happens"""

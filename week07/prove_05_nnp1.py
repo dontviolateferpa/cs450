@@ -6,6 +6,7 @@ dataset.
 """
 
 import argparse
+import math
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -28,6 +29,19 @@ class Network:
         self.sizes = sizes
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
         self.bias = -1
+    
+    def _add(self, input_vector):
+        """sum the inputs"""
+        keys = input_vector.keys()
+        val_vector = []
+        for key in keys:
+            val_vector.append(input_vector[key])
+        
+        # got the following thre lines of code from
+        #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
+        for w in zip (self.weights[0]):
+            a = sigmoid(np.dot(w, val_vector) + self.bias)
+        return a
     
 def sigmoid(v):
     """sigmoid function"""
@@ -80,8 +94,10 @@ def prep_data_pima(df):
     #   https://stackoverflow.com/questions/12525722/normalize-data-in-pandas
     df_target = df["Class Variable"]
     df.drop(columns=["Class Variable"], inplace=True)
-    df_norm = (df - df.mean()) / (df.max() - df.min())
-    return df_norm, df_target
+    cols = df.columns
+    for col in cols:
+        df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
+    return df, df_target
 
 def load_csv_file_iris(args):
     """open csv file for iris dataset"""
@@ -98,11 +114,15 @@ def prep_data_iris(df):
     """prepare the data for the iris dataset"""
     # this next line of code is from
     #   https://stackoverflow.com/questions/12525722/normalize-data-in-pandas
-    df_norm = (df - df.mean()) / (df.max() - df.min())
+    # df_norm = (df - df.mean()) / (df.max() - df.min())
     df_target = df["Class"]
-    df_norm.drop(columns=["Class"], inplace=True)
-
-    return df_norm, df_target
+    df.drop(columns=["Class"], inplace=True)
+    cols = df.columns
+    # for col in df.columns:
+    #     df[col] = df.applymap(lambda x: (x - df[col].mean()) / (df[col].max() - df.min()))
+    for col in cols:
+        df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
+    return df, df_target
 
 def prep_data(args):
     """prepare the data from one of the datasets"""
@@ -124,5 +144,9 @@ def main():
     check_args(args)
     train_data, test_data, train_target, test_target = prep_data(args)
     n = Network(args.sizes)
+    for index, row in train_data.iterrows():
+        # print len(row)
+        # print row
+        n._add(row)
 
 main()

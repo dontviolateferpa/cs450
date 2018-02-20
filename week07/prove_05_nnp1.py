@@ -147,6 +147,10 @@ def main():
     for index, row in train_data.iterrows():
         # print len(row)
         # print row
-        n._add(row)
+        val = n._add(row)
+        if val < 0.5:
+            print 0
+        else:
+            print 1
 
 main()

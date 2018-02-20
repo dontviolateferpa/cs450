@@ -11,6 +11,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
+COLS_PIMA = ["Times Pregnant", "Plasma Glucose", "Diastolic Blood Pressure",
+             "Triceps Skin Fold Thickness", "2-Hour Serum Insulin", "BMI",
+             "Diabetes Pedigree Function", "Age", "Class Variable"]
 
 class Network:
     """the Network contains nodes"""
@@ -62,11 +65,23 @@ def check_args(args):
 
 def load_csv_file_pima(args):
     """open csv file for pima indian dataset"""
-    return None, None
+    cols = COLS_PIMA
+    df = pd.io.parsers.read_csv(
+        args.csv_file,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+    return df
 
 def prep_data_pima(df):
     """pepare the data for the pima indian dataset"""
-    return None, None
+    # this next line of code is from
+    #   https://stackoverflow.com/questions/12525722/normalize-data-in-pandas
+    df_target = df["Class Variable"]
+    df.drop(columns=["Class Variable"], inplace=True)
+    df_norm = (df - df.mean()) / (df.max() - df.min())
+    return df_norm, df_target
 
 def load_csv_file_iris(args):
     """open csv file for iris dataset"""
@@ -81,10 +96,13 @@ def load_csv_file_iris(args):
 
 def prep_data_iris(df):
     """prepare the data for the iris dataset"""
+    # this next line of code is from
+    #   https://stackoverflow.com/questions/12525722/normalize-data-in-pandas
+    df_norm = (df - df.mean()) / (df.max() - df.min())
     df_target = df["Class"]
-    df.drop(columns=["Class"], inplace=True)   
+    df_norm.drop(columns=["Class"], inplace=True)
 
-    return df, df_target
+    return df_norm, df_target
 
 def prep_data(args):
     """prepare the data from one of the datasets"""
@@ -104,6 +122,7 @@ def main():
     """where the magic happens"""
     args = receive_args().parse_args()
     check_args(args)
+    train_data, test_data, train_target, test_target = prep_data(args)
     n = Network(args.sizes)
 
 main()

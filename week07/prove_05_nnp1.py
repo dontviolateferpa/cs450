@@ -23,12 +23,15 @@ class Network:
         """initialize the class"""
         # a "size" in the list of sizes specifies the number of neurons in each layer
         # of the network
-        # the next three lines of code are from:
+        # the next four lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
-        self.bias = -1
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        # there should only be one output for each hidden node coming from the bias, hence
+        #   the dimension is (y, 1) [y being the number of nodes receiving input from the bias]
+        print self.weights
     
     def _add(self, input_vector):
         """sum the inputs"""
@@ -39,8 +42,8 @@ class Network:
         
         # got the following thre lines of code from
         #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
-        for w in zip (self.weights[0]):
-            a = sigmoid(np.dot(w, val_vector) + self.bias)
+        for b, w in zip (self.biases, self.weights):
+            a = sigmoid(np.dot(w, val_vector) + b)
         return a
     
 def sigmoid(v):
@@ -68,14 +71,12 @@ def receive_args():
 
     return parser
 
-def check_args(args):
+def check_args(args, num_feats):
     """make sure the arguments passed by the user are valid"""
-    if len(args.sizes) > 3:
-        raise ValueError("too many layers for network--must be equal to or less than 3")
-    for size in args.sizes:
-        if size < 1:
-            raise ValueError("incorrect number of nodes for a layer in the network--" +
-                             "value must be greater than or equal to 1")
+    if args.sizes[0] != num_feats:
+        raise ValueError(("invalid number of nodes: there are %d feats in %s, and "+
+                         "there are %d sets of weights") % (num_feats, args.csv_file,
+                         args.sizes[0]))
 
 def load_csv_file_pima(args):
     """open csv file for pima indian dataset"""
@@ -138,19 +139,27 @@ def prep_data(args):
     train_data, test_data, train_target, test_target = train_test_split(df_data, df_target, test_size=0.3)
     return train_data, test_data, train_target, test_target
 
+def prep_sizes(data, target, hidden_nodes):
+    """prepare an array of sizes for the nodes in the network"""
+    hn_copy = hidden_nodes
+    hn_copy.insert(0, data.shape[1])
+    hn_copy.append(len(target.to_frame()[target.to_frame().columns[0]].unique()))
+    return hn_copy
+
 def main():
     """where the magic happens"""
     args = receive_args().parse_args()
-    check_args(args)
     train_data, test_data, train_target, test_target = prep_data(args)
-    n = Network(args.sizes)
-    for index, row in train_data.iterrows():
-        # print len(row)
-        # print row
-        val = n._add(row)
-        if val < 0.5:
-            print 0
-        else:
-            print 1
+    sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
+    check_args(args, train_data.shape[1])
+    n = Network(sizes)
+    # for index, row in train_data.iterrows():
+    #     # print len(row)
+    #     # print row
+    #     val = n._add(row)
+    #     if val < 0.5:
+    #         print 0
+    #     else:
+    #         print 1
 
 main()

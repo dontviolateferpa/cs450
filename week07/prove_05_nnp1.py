@@ -15,36 +15,57 @@ COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Clas
 COLS_PIMA = ["Times Pregnant", "Plasma Glucose", "Diastolic Blood Pressure",
              "Triceps Skin Fold Thickness", "2-Hour Serum Insulin", "BMI",
              "Diabetes Pedigree Function", "Age", "Class Variable"]
+COLS_EXPL = ["x1", "x2", "c"]
 
 class Network:
     """the Network contains nodes"""
 
-    def __init__(self, sizes):
+    def __init__(self, sizes, classes, example=False):
         """initialize the class"""
         # a "size" in the list of sizes specifies the number of neurons in each layer
         # of the network
         # the next four lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        if example == False:
+            self.num_layers = len(sizes)
+            self.sizes = sizes
+            self.weights = [np.random.randn(y,x) for x, y in zip(sizes[:-1], sizes[1:])]
+            self.bias_weights = [np.random.randn(y, 1) for y in sizes[1:]]
+        else:
+            self.num_layers = 3
+            self.sizes = [2, 2, 2]
+            self.weights = [[[0.5, -0.3], [0.2, -0.6]], [[0.3, -0.9], [-0.2, 0.1]]]
+            self.bias_weights = [[[-0.2], [0.1]], [[0.7], [0.5]]]
+        self.classes = classes
         # there should only be one output for each hidden node coming from the bias, hence
         #   the dimension is (y, 1) [y being the number of nodes receiving input from the bias]
-        print self.weights
-    
+
     def _add(self, input_vector):
         """sum the inputs"""
+        # got the following thre lines of code from
+        #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         keys = input_vector.keys()
-        val_vector = []
+        activation = []
+        layer_in = []
         for key in keys:
-            val_vector.append(input_vector[key])
+            activation.append(input_vector[key])
         
         # got the following thre lines of code from
         #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
-        for b, w in zip (self.biases, self.weights):
-            a = sigmoid(np.dot(w, val_vector) + b)
-        return a
+        for b, w in zip (self.bias_weights, self.weights):
+            activation = np.dot(w,activation)
+            for index in range(len(activation)):
+                activation[index] += (-1)*b[index][0]
+                activation[index] = sigmoid(activation[index])
+        return activation
+
+    def predict(self, test_data):
+        """make predictions on the dataset"""
+        predicted_class, predictions = None, []
+        for index, row in test_data.iterrows():
+            predicted_class = self._add(row)
+            predictions.append(self.classes[np.argmax(predicted_class)])
+        return predictions
     
 def sigmoid(v):
     """sigmoid function"""
@@ -60,7 +81,7 @@ def receive_args():
     parser.add_argument('--csv_file',
                         dest='csv_file',
                         action='store',
-                        choices=["iris.csv", "pima.csv"],
+                        choices=["iris.csv", "pima.csv", "class_example.csv"],
                         required=True)
     parser.add_argument('--sizes',
                         dest='sizes',
@@ -70,13 +91,6 @@ def receive_args():
                         type=int)
 
     return parser
-
-def check_args(args, num_feats):
-    """make sure the arguments passed by the user are valid"""
-    if args.sizes[0] != num_feats:
-        raise ValueError(("invalid number of nodes: there are %d feats in %s, and "+
-                         "there are %d sets of weights") % (num_feats, args.csv_file,
-                         args.sizes[0]))
 
 def load_csv_file_pima(args):
     """open csv file for pima indian dataset"""
@@ -125,6 +139,23 @@ def prep_data_iris(df):
         df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
     return df, df_target
 
+def load_csv_file_example(args):
+    """open csv file for iris dataset"""
+    cols = COLS_EXPL
+    df = pd.io.parsers.read_csv(
+        args.csv_file,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+    return df
+
+def prep_data_example(df):
+    """prepare the data for the class example"""
+    df_target = df["c"]
+    df.drop(columns=["c"], inplace=True)    
+    return df, df_target
+
 def prep_data(args):
     """prepare the data from one of the datasets"""
     df_data = None
@@ -133,6 +164,9 @@ def prep_data(args):
         df_data, df_target = prep_data_iris(load_csv_file_iris(args))
     elif args.csv_file == "pima.csv":
         df_data, df_target = prep_data_pima(load_csv_file_pima(args))
+    elif args.csv_file == "class_example.csv":
+        df_data, df_target = prep_data_example(load_csv_file_example(args))
+        return df_data, None, df_target, None
     else:
         raise ValueError("the script is not ready for this filename")
 
@@ -150,16 +184,15 @@ def main():
     """where the magic happens"""
     args = receive_args().parse_args()
     train_data, test_data, train_target, test_target = prep_data(args)
-    sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
-    check_args(args, train_data.shape[1])
-    n = Network(sizes)
-    # for index, row in train_data.iterrows():
-    #     # print len(row)
-    #     # print row
-    #     val = n._add(row)
-    #     if val < 0.5:
-    #         print 0
-    #     else:
-    #         print 1
+    df_target = pd.concat([train_target, test_target])
+    possible_classes = df_target.to_frame()[df_target.to_frame().columns[0]].unique()
+    n = None
+    if args.csv_file != "class_example.csv":
+        sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
+        n = Network(sizes, possible_classes)
+        # CHANGE THIS TO TEST DATA IN THE FUTURE
+        n.predict(train_data)
+    else:
+        n = Network(args.sizes, possible_classes, example=True)
 
 main()

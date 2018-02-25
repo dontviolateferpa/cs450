@@ -6,6 +6,7 @@ dataset.
 """
 
 import argparse
+import difflib
 import math
 import numpy as np
 import pandas as pd
@@ -180,6 +181,15 @@ def prep_sizes(data, target, hidden_nodes):
     hn_copy.append(len(target.to_frame()[target.to_frame().columns[0]].unique()))
     return hn_copy
 
+def display_similarity(predictions, targets_test, method):
+    """display the similarity between two arrays"""
+    if isinstance(predictions, pd.DataFrame) or isinstance(predictions, pd.Series):
+        predictions = predictions.as_matrix()
+    if isinstance(targets_test, pd.DataFrame) or isinstance(targets_test, pd.Series):
+        targets_test = targets_test.as_matrix()
+    sm=difflib.SequenceMatcher(None, predictions, targets_test)
+    print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
+
 def main():
     """where the magic happens"""
     args = receive_args().parse_args()
@@ -191,8 +201,10 @@ def main():
         sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
         n = Network(sizes, possible_classes)
         # CHANGE THIS TO TEST DATA IN THE FUTURE
-        n.predict(train_data)
+        predictions = n.predict(train_data)
     else:
         n = Network(args.sizes, possible_classes, example=True)
+        predictions = n.predict(train_data)
+        display_similarity(predictions, train_target, "Neural Network")
 
 main()

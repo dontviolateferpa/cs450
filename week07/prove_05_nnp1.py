@@ -202,6 +202,7 @@ def main():
         n = Network(sizes, possible_classes)
         # CHANGE THIS TO TEST DATA IN THE FUTURE
         predictions = n.predict(train_data)
+        display_similarity(predictions, test_target, "Neural Network")        
     else:
         n = Network(args.sizes, possible_classes, example=True)
         predictions = n.predict(train_data)

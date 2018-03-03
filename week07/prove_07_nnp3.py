@@ -18,15 +18,16 @@ COLS_PIMA = ["Times Pregnant", "Plasma Glucose", "Diastolic Blood Pressure",
              "Diabetes Pedigree Function", "Age", "Class Variable"]
 COLS_EXPL = ["x1", "x2", "c"]
 
-class Network:
+class MLP:
     """the Network contains nodes"""
-
     def __init__(self, sizes, classes, example=False):
         """initialize the class"""
         # a "size" in the list of sizes specifies the number of neurons in each layer
         # of the network
         # the next four lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
+        self.activations = []
+        self.learning_rate = 0.1
         if example == False:
             self.num_layers = len(sizes)
             self.sizes = sizes
@@ -35,39 +36,72 @@ class Network:
         else:
             self.num_layers = 3
             self.sizes = [2, 2, 2]
-            self.weights = [[[0.5, -0.3], [0.2, -0.6]], [[0.3, -0.9], [-0.2, 0.1]]]
-            self.bias_weights = [[[-0.2], [0.1]], [[0.7], [0.5]]]
+            #                w_i1 = nodes i to node 1 in hidden layer1
+            #                w_i1_ol = nodes i to node 1 in output layer
+            #                w_i1_h1     w_i2_h1        w_i1_ol      w_i2_ol
+            self.weights = [[[0.3, 0.4], [0.2, -0.1]], [[0.2, -0.1], [-0.2, 0.4]]]
+            self.bias_weights = [[[0.2], [-0.1]], [[0.3], [0.1]]]
         self.classes = classes
         # there should only be one output for each hidden node coming from the bias, hence
         #   the dimension is (y, 1) [y being the number of nodes receiving input from the bias]
 
-    def _add(self, input_vector):
+    def _feed_forward(self, input_vector):
         """sum the inputs"""
         # got the following thre lines of code from
         #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         keys = input_vector.keys()
-        activation = []
-        layer_in = []
+        a = []
+        self.activations = []
         for key in keys:
-            activation.append(input_vector[key])
-        
+            a.append(input_vector[key])
         # got the following thre lines of code from
         #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         for b, w in zip (self.bias_weights, self.weights):
-            activation = np.dot(w,activation)
-            for index in range(len(activation)):
-                activation[index] += (-1)*b[index][0]
-                activation[index] = sigmoid(activation[index])
-        return activation
+            a = np.dot(w,a)
+            for index in range(len(a)):
+                a[index] += (-1)*b[index][0]
+                a[index] = sigmoid(a[index])
+            self.activations.append(a)
+        return a
+    
+    def _feed_backward(self, predict_tar, correct_tar, r_weights, r_bias_weights, r_activations):
+        """feed backward"""
+        errors = []
+        for i in range(0,len(r_weights)):
+            e_layer = []
+            for j in range(len(r_activations[i])):
+                e, a, o = None, r_activations[i][j], 0
+                if j == np.where(self.classes==correct_tar)[0]:
+                    o = 1 # expected target
+                if i == 0: # output layer
+                    e = a*(1-a)*(a-o)
+                    e_layer.append(e)
+                else: # hidden layer
+                    pass
+            errors.append(e_layer)
+        return errors[::-1]
 
     def predict(self, test_data):
         """make predictions on the dataset"""
         predicted_class, predictions = None, []
         for index, row in test_data.iterrows():
-            predicted_class = self._add(row)
+            predicted_class = self._feed_forward(row)
             predictions.append(self.classes[np.argmax(predicted_class)])
         return predictions
     
+    def fit(self, train_data, train_target):
+        """fit the classifier"""
+        predicted_class, predictions = None, []
+        for tar, row in zip(train_target.to_frame().iterrows(), train_data.iterrows()):
+            predicted_class = self._feed_forward(row[1])
+            # POSSIBLE ISSUE WITH np.argmax
+            predictions.append(self.classes[np.argmax(predicted_class)])
+            predict_tar = self.classes[np.argmax(predicted_class)]
+            correct_tar = tar[1].to_frame().as_matrix()[0][0]
+            self._feed_backward(predict_tar, correct_tar, self.weights[::-1], self.bias_weights[::-1],
+                                self.activations[::-1])
+        return predictions
+
 def sigmoid(v):
     """sigmoid function"""
     return 1/(1 + np.exp(-v))
@@ -134,8 +168,6 @@ def prep_data_iris(df):
     df_target = df["Class"]
     df.drop(columns=["Class"], inplace=True)
     cols = df.columns
-    # for col in df.columns:
-    #     df[col] = df.applymap(lambda x: (x - df[col].mean()) / (df[col].max() - df.min()))
     for col in cols:
         df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
     return df, df_target
@@ -196,16 +228,16 @@ def main():
     train_data, test_data, train_target, test_target = prep_data(args)
     df_target = pd.concat([train_target, test_target])
     possible_classes = df_target.to_frame()[df_target.to_frame().columns[0]].unique()
-    n = None
+    n_classifier = None
     if args.csv_file != "class_example.csv":
         sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
-        n = Network(sizes, possible_classes)
+        n_classifier = MLP(sizes, possible_classes)
         # CHANGE THIS TO TEST DATA IN THE FUTURE
-        predictions = n.predict(train_data)
+        predictions = n_classifier.fit(train_data, train_target)
         display_similarity(predictions, test_target, "Neural Network")        
     else:
-        n = Network(args.sizes, possible_classes, example=True)
-        predictions = n.predict(train_data)
+        n_classifier = MLP(args.sizes, possible_classes, example=True)
+        predictions = n_classifier.fit(train_data, train_target)
         display_similarity(predictions, train_target, "Neural Network")
 
 main()

@@ -35,8 +35,8 @@ class Network:
         else:
             self.num_layers = 3
             self.sizes = [2, 2, 2]
-            self.weights = [[[0.5, -0.3], [0.2, -0.6]], [[0.3, -0.9], [-0.2, 0.1]]]
-            self.bias_weights = [[[-0.2], [0.1]], [[0.7], [0.5]]]
+            self.weights = [[[0.3, 0.2], [0.4, -0.1]], [[0.2, -0.2], [-0.1, 0.4]]]
+            self.bias_weights = [[[0.2], [-0.1]], [[0.3], [0.1]]]
         self.classes = classes
         # there should only be one output for each hidden node coming from the bias, hence
         #   the dimension is (y, 1) [y being the number of nodes receiving input from the bias]

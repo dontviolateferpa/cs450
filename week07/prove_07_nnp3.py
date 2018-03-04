@@ -126,10 +126,6 @@ def sigmoid(v):
     """sigmoid function"""
     return 1/(1 + np.exp(-v))
 
-def sigmoid_prime(v):
-    """sigmoid prime function"""
-    return sigmoid(v)*(1-sigmoid(v))
-
 def receive_args():
     """receive arguments from the user pass to the script"""
     parser = argparse.ArgumentParser(description='Pass arguments to the script')
@@ -144,7 +140,6 @@ def receive_args():
                         required=True,
                         nargs='+',
                         type=int)
-
     return parser
 
 def load_csv_file_pima(args):

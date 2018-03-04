@@ -26,7 +26,7 @@ class MLP:
         # of the network
         # the next four lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
-        self.activations  = []
+        self.activations, self.accuracies  = [], []
         self.learning_rate = 0.1
         if example == False:
             self.num_layers = len(sizes)
@@ -68,7 +68,6 @@ class MLP:
     def _feed_backward(self, predict_tar, correct_tar, r_weights, r_bias_weights, r_activations):
         """feed backward"""
         pt, ct, rw, rw, ra = predict_tar, correct_tar, r_weights, r_bias_weights, r_activations
-        print ">>>>>>> feed backwards <<<<<<<"
         r_errors = []
         for i in range(0,len(r_weights)):
             e_layer = []
@@ -81,26 +80,22 @@ class MLP:
                     e_layer.append(e)
                 else: # hidden layer
                     temp_weights = []
-                    for k in range(len(r_weights[i])):
+                    for k in range(len(r_weights[i-1])):
                         temp_weights.append(r_weights[i-1][k][j])
                     e = a*(1-a)*np.dot(temp_weights, r_errors[i-1])
                     e_layer.append(e)
             r_errors.append(e_layer)
         for ir in range(len(self.weights))[::-1]: # iterate over layers
             for j in range(len(self.weights)): #iterate over nodes
-                wij = self.weights[ir][j]
-                ai = self.activations[ir][j]
+                wij_b = self.bias_weights[ir][j][0]
                 dj = r_errors[len(self.weights)-ir-1][j]
-                print "\tdj"
-                print dj
-                print "\twij"
-                print wij
-                print "\tai"
-                print ai
-                # print wij - self.learning_rate * dj
-                print self.bias_weights[ir][j]
-
-            print ""
+                # print "%.3f = %.3f - (%.1f * %.3f * %.3f) bias" % (self.bias_weights[ir][j][0], wij_b, self.learning_rate, dj, -1)
+                self.bias_weights[ir][j][0] = wij_b - (self.learning_rate * dj * (-1)) # update bias weights
+                for i in range(len(self.weights[ir][j])):
+                    ai = self.activations[ir][i]
+                    wij = self.weights[ir][j][i]
+                    # print "%.3f = %.3f - (%.1f * %.3f * %.3f)" % (self.weights[ir][j][i], wij, self.learning_rate, dj, ai)
+                    self.weights[ir][j][i] = wij - (self.learning_rate * dj * ai) # update weights
         return r_errors[::-1]
 
     def predict(self, test_data):
@@ -114,14 +109,19 @@ class MLP:
     def fit(self, train_data, train_target):
         """fit the classifier"""
         predicted_class, predictions = None, []
-        for tar, row in zip(train_target.to_frame().iterrows(), train_data.iterrows()):
-            predicted_class = self._feed_forward(row[1])
-            # POSSIBLE ISSUE WITH np.argmax
-            predictions.append(self.classes[np.argmax(predicted_class)])
-            predict_tar = self.classes[np.argmax(predicted_class)]
-            correct_tar = tar[1].to_frame().as_matrix()[0][0]
-            self._feed_backward(predict_tar, correct_tar, self.weights[::-1], self.bias_weights[::-1],
-                                self.activations[::-1])
+        for x in range(200):
+            predicted_class, predictions = None, []
+            for tar, row in zip(train_target.to_frame().iterrows(), train_data.iterrows()):
+                predicted_class = self._feed_forward(row[1])
+                # POSSIBLE ISSUE WITH np.argmax
+                predictions.append(self.classes[np.argmax(predicted_class)])
+                predict_tar = self.classes[np.argmax(predicted_class)]
+                correct_tar = tar[1].to_frame().as_matrix()[0][0]
+                self._feed_backward(predict_tar, correct_tar, self.weights[::-1], self.bias_weights[::-1],
+                                    self.activations[::-1])
+            sm=difflib.SequenceMatcher(None, predictions, train_target.as_matrix())
+            self.accuracies.append(sm.ratio())
+        print self.accuracies
         return predictions
 
 def sigmoid(v):
@@ -255,11 +255,13 @@ def main():
         sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
         n_classifier = MLP(sizes, possible_classes)
         # CHANGE THIS TO TEST DATA IN THE FUTURE
-        predictions = n_classifier.fit(train_data, train_target)
-        display_similarity(predictions, test_target, "Neural Network")        
+        n_classifier.fit(train_data, train_target)
+        predictions = n_classifier.predict(test_data)
+        display_similarity(predictions, test_target, "Neural Network") 
     else:
         n_classifier = MLP(args.sizes, possible_classes, example=True)
-        predictions = n_classifier.fit(train_data, train_target)
+        n_classifier.fit(train_data, train_target)
+        predictions = n_classifier.predict(train_data)
         display_similarity(predictions, train_target, "Neural Network")
 
 main()

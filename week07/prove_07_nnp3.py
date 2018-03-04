@@ -54,6 +54,7 @@ class MLP:
         self.activations = []
         for key in keys:
             a.append(input_vector[key])
+        self.activations.append(input_vector)
         # got the following thre lines of code from
         #   https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
         for b, w in zip (self.bias_weights, self.weights):
@@ -90,10 +91,13 @@ class MLP:
                 wij = self.weights[ir][j]
                 ai = self.activations[ir][j]
                 dj = r_errors[len(self.weights)-ir-1][j]
+                print "\tdj"
                 print dj
+                print "\twij"
                 print wij
+                print "\tai"
                 print ai
-                print wij - self.learning_rate * dj
+                # print wij - self.learning_rate * dj
                 print self.bias_weights[ir][j]
 
             print ""

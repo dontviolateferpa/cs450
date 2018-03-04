@@ -26,7 +26,7 @@ class MLP:
         # of the network
         # the next four lines of code are from:
         #    https://bigsnarf.wordpress.com/2016/07/16/neural-network-from-scratch-in-python/
-        self.activations = []
+        self.activations  = []
         self.learning_rate = 0.1
         if example == False:
             self.num_layers = len(sizes)
@@ -67,6 +67,7 @@ class MLP:
     def _feed_backward(self, predict_tar, correct_tar, r_weights, r_bias_weights, r_activations):
         """feed backward"""
         pt, ct, rw, rw, ra = predict_tar, correct_tar, r_weights, r_bias_weights, r_activations
+        print ">>>>>>> feed backwards <<<<<<<"
         r_errors = []
         for i in range(0,len(r_weights)):
             e_layer = []
@@ -84,6 +85,18 @@ class MLP:
                     e = a*(1-a)*np.dot(temp_weights, r_errors[i-1])
                     e_layer.append(e)
             r_errors.append(e_layer)
+        for ir in range(len(self.weights))[::-1]: # iterate over layers
+            for j in range(len(self.weights)): #iterate over nodes
+                wij = self.weights[ir][j]
+                ai = self.activations[ir][j]
+                dj = r_errors[len(self.weights)-ir-1][j]
+                print dj
+                print wij
+                print ai
+                print wij - self.learning_rate * dj
+                print self.bias_weights[ir][j]
+
+            print ""
         return r_errors[::-1]
 
     def predict(self, test_data):

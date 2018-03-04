@@ -66,7 +66,8 @@ class MLP:
     
     def _feed_backward(self, predict_tar, correct_tar, r_weights, r_bias_weights, r_activations):
         """feed backward"""
-        errors = []
+        pt, ct, rw, rw, ra = predict_tar, correct_tar, r_weights, r_bias_weights, r_activations
+        r_errors = []
         for i in range(0,len(r_weights)):
             e_layer = []
             for j in range(len(r_activations[i])):
@@ -77,9 +78,13 @@ class MLP:
                     e = a*(1-a)*(a-o)
                     e_layer.append(e)
                 else: # hidden layer
-                    pass
-            errors.append(e_layer)
-        return errors[::-1]
+                    temp_weights = []
+                    for k in range(len(r_weights[i])):
+                        temp_weights.append(r_weights[i-1][k][j])
+                    e = a*(1-a)*np.dot(temp_weights, r_errors[i-1])
+                    e_layer.append(e)
+            r_errors.append(e_layer)
+        return r_errors[::-1]
 
     def predict(self, test_data):
         """make predictions on the dataset"""

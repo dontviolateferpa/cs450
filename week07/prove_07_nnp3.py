@@ -89,12 +89,10 @@ class MLP:
             for j in range(len(self.weights)): #iterate over nodes
                 wij_b = self.bias_weights[ir][j][0]
                 dj = r_errors[len(self.weights)-ir-1][j]
-                # print "%.3f = %.3f - (%.1f * %.3f * %.3f) bias" % (self.bias_weights[ir][j][0], wij_b, self.learning_rate, dj, -1)
                 self.bias_weights[ir][j][0] = wij_b - (self.learning_rate * dj * (-1)) # update bias weights
                 for i in range(len(self.weights[ir][j])):
                     ai = self.activations[ir][i]
                     wij = self.weights[ir][j][i]
-                    # print "%.3f = %.3f - (%.1f * %.3f * %.3f)" % (self.weights[ir][j][i], wij, self.learning_rate, dj, ai)
                     self.weights[ir][j][i] = wij - (self.learning_rate * dj * ai) # update weights
         return r_errors[::-1]
 

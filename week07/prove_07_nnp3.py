@@ -90,7 +90,7 @@ class MLP:
                     e_layer.append(e)
             r_errors.append(e_layer)
         for ir in range(len(self.weights))[::-1]: # iterate over layers
-            for j in range(len(self.weights)): #iterate over nodes
+            for j in range(len(self.weights[ir])): #iterate over nodes
                 wij_b = self.bias_weights[ir][j][0]
                 dj = r_errors[len(self.weights)-ir-1][j]
                 self.bias_weights[ir][j][0] = wij_b - (self.learning_rate * dj * (-1)) # update bias weights
@@ -108,7 +108,7 @@ class MLP:
             predictions.append(self.classes[np.argmax(predicted_class)])
         return predictions
     
-    def fit(self, train_data, train_target):
+    def fit(self, train_data, train_target, alt=False):
         """fit the classifier"""
         predicted_class, predictions = None, []
         for x in range(200):
@@ -121,8 +121,11 @@ class MLP:
                 correct_tar = tar[1].to_frame().as_matrix()[0][0]
                 self._feed_backward(predict_tar, correct_tar, self.weights[::-1], self.bias_weights[::-1],
                                     self.activations[::-1])
-            sm=difflib.SequenceMatcher(None, predictions, train_target.as_matrix())
-            self.accuracies.append(sm.ratio())
+            if alt == False:
+                sm=difflib.SequenceMatcher(None, predictions, train_target.as_matrix())
+                self.accuracies.append(sm.ratio())
+            else:
+                self.accuracies.append(calc_similarity_alt(predictions, train_target))
         print self.accuracies
         return predictions
 
@@ -161,11 +164,14 @@ def prep_data_pima(df):
     """pepare the data for the pima indian dataset"""
     # this next line of code is from
     #   https://stackoverflow.com/questions/12525722/normalize-data-in-pandas
+    na_value = float('nan')
+    df.dropna(inplace=True)
     df_target = df["Class Variable"]
     df.drop(columns=["Class Variable"], inplace=True)
     cols = df.columns
     for col in cols:
         df[col] = (df[col] - df[col].mean())/df[col].std(ddof=0)
+    print df
     return df, df_target
 
 def load_csv_file_iris(args):
@@ -234,12 +240,33 @@ def prep_sizes(data, target, hidden_nodes):
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    if isinstance(predictions, pd.DataFrame) or isinstance(predictions, pd.Series):
+    if isinstance(predictions, pd.DataFrame):
         predictions = predictions.as_matrix()
-    if isinstance(targets_test, pd.DataFrame) or isinstance(targets_test, pd.Series):
+    if isinstance(predictions, pd.Series):
+        predictions = predictions.to_frame().as_matrix()
+    if isinstance(targets_test, pd.DataFrame):
         targets_test = targets_test.as_matrix()
+    if isinstance(targets_test, pd.Series):
+        targets_test = targets_test.to_frame().as_matrix()
     sm=difflib.SequenceMatcher(None, predictions, targets_test)
     print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
+
+def calc_similarity_alt(predictions, targets_test):
+    """display the similarity between two arrays"""
+    if isinstance(predictions, pd.DataFrame):
+        predictions = predictions.as_matrix()
+    if isinstance(predictions, pd.Series):
+        predictions = predictions.to_frame().as_matrix()
+    if isinstance(targets_test, pd.DataFrame):
+        targets_test = targets_test.as_matrix()
+    if isinstance(targets_test, pd.Series):
+        targets_test = targets_test.to_frame().as_matrix()
+    sim_score = 0
+    count = 0
+    for x in predictions:
+        if x == targets_test[count]:
+            sim_score = sim_score + 1
+    return float(sim_score) / float(len(predictions))
 
 def main():
     """where the magic happens"""
@@ -252,9 +279,14 @@ def main():
         sizes = prep_sizes(train_data, pd.concat([train_target, test_target]), args.sizes)
         n_classifier = MLP(sizes, possible_classes)
         # CHANGE THIS TO TEST DATA IN THE FUTURE
-        n_classifier.fit(train_data, train_target)
-        predictions = n_classifier.predict(test_data)
-        display_similarity(predictions, test_target, "Neural Network") 
+        if args.csv_file != "pima.csv":
+            n_classifier.fit(train_data, train_target)
+            predictions = n_classifier.predict(test_data)
+            display_similarity(predictions, test_target, "Neural Network") 
+        else:
+            n_classifier.fit(train_data, train_target, alt=True)
+            predictions = n_classifier.predict(test_data)
+            print "The two are %f percent similar" % calc_similarity_alt(predictions, test_target) 
     else:
         n_classifier = MLP(args.sizes, possible_classes, example=True)
         n_classifier.fit(train_data, train_target)

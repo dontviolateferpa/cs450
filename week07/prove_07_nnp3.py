@@ -72,7 +72,6 @@ class MLP:
     
     def _feed_backward(self, predict_tar, correct_tar, r_weights, r_bias_weights, r_activations):
         """feed backward"""
-        pt, ct, rw, rw, ra = predict_tar, correct_tar, r_weights, r_bias_weights, r_activations
         r_errors = []
         for i in range(0,len(r_weights)):
             e_layer = []
@@ -279,15 +278,19 @@ def main():
         if args.csv_file != "pima.csv":
             n_classifier.fit(train_data, train_target)
             predictions = n_classifier.predict(test_data)
-            display_similarity(predictions, test_target, "Neural Network") 
+            display_similarity(predictions, test_target, "Neural Network")
+            classifier = MLPClassifier(4)
+            model = classifier.fit(train_data, train_target)
+            other_predictions = model.predict(test_data)
+            display_similarity(other_predictions, test_target, "sklearn MLP")
         else:
             n_classifier.fit(train_data, train_target, alt=True)
             predictions = n_classifier.predict(test_data)
             print "The two are %f percent similar" % calc_similarity_alt(predictions, test_target)
-        classifier = MLPClassifier(4)
-        model = classifier.fit(train_data, train_target)
-        other_predictions = model.predict(test_data)
-        display_similarity(other_predictions, test_target, "sklearn MLP")
+            classifier = MLPClassifier(4)
+            model = classifier.fit(train_data, train_target)
+            other_predictions = model.predict(test_data)
+            print "The two are %f percent similar (sklearn MLP)" % calc_similarity_alt(other_predictions, test_target)
     else:
         n_classifier = MLP(args.sizes, possible_classes, example=True)
         n_classifier.fit(train_data, train_target)

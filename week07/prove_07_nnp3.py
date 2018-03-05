@@ -15,6 +15,7 @@ import math
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 
 COLS_IRIS = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width", "Class"]
 COLS_PIMA = ["Times Pregnant", "Plasma Glucose", "Diastolic Blood Pressure",
@@ -240,14 +241,10 @@ def prep_sizes(data, target, hidden_nodes):
 
 def display_similarity(predictions, targets_test, method):
     """display the similarity between two arrays"""
-    if isinstance(predictions, pd.DataFrame):
+    if isinstance(predictions, pd.DataFrame) or isinstance(predictions, pd.Series):
         predictions = predictions.as_matrix()
-    if isinstance(predictions, pd.Series):
-        predictions = predictions.to_frame().as_matrix()
-    if isinstance(targets_test, pd.DataFrame):
+    if isinstance(targets_test, pd.DataFrame) or isinstance(targets_test, pd.Series):
         targets_test = targets_test.as_matrix()
-    if isinstance(targets_test, pd.Series):
-        targets_test = targets_test.to_frame().as_matrix()
     sm=difflib.SequenceMatcher(None, predictions, targets_test)
     print "The two are " + str(sm.ratio()) + " percent similar (" + method + ")"
 
@@ -286,7 +283,11 @@ def main():
         else:
             n_classifier.fit(train_data, train_target, alt=True)
             predictions = n_classifier.predict(test_data)
-            print "The two are %f percent similar" % calc_similarity_alt(predictions, test_target) 
+            print "The two are %f percent similar" % calc_similarity_alt(predictions, test_target)
+        classifier = MLPClassifier(4)
+        model = classifier.fit(train_data, train_target)
+        other_predictions = model.predict(test_data)
+        display_similarity(other_predictions, test_target, "sklearn MLP")
     else:
         n_classifier = MLP(args.sizes, possible_classes, example=True)
         n_classifier.fit(train_data, train_target)

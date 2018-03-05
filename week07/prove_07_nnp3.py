@@ -1,8 +1,12 @@
 """
-Notice that at this point, we are NOT implementing any sort of training or learning
-in our algorithm. The point of this part of the assignment is to make sure you have
-the basics of a network of nodes in place that can handle a real instance from a
-dataset.
+Implement the basic MLP algorithm
+Handle nominal and numeric data (if you choose, nominal data can be handled via pre-processing)
+Produce a graph of your learner's accuracy on the validation set (or the training set if necessary) per iteration of the algorithm.
+Basic experimentation
+    Use the supplied datasets
+    Try a few different configurations (# of layers, # of nodes per layer)
+    Produce graphs of the training progress
+    Compare overall results to existing implementations of MLP
 """
 
 import argparse

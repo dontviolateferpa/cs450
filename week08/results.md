@@ -1,8 +1,10 @@
-# letters
+# datasets and results
 
-## combination #1
+## letters
 
-### parameters
+### combination #1
+
+#### parameters
 
 ```txt
 Parameters:
@@ -14,13 +16,13 @@ Parameters:
 Number of Support Vectors:  9987
 ```
 
-### accuracy
+#### accuracy
 
 86.9%
 
-## combination #2
+### combination #2
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -32,13 +34,13 @@ Parameters:
 Number of Support Vectors:  13915
 ```
 
-### accuracy
+#### accuracy
 
 83.9%
 
-## combination #3
+### combination #3
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -50,13 +52,13 @@ Parameters:
 Number of Support Vectors:  10169
 ```
 
-### accuracy
+#### accuracy
 
 92.4%
 
-## combination #4
+### combination #4
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -68,13 +70,13 @@ Parameters:
 Number of Support Vectors:  9683
 ```
 
-### accuracy
+#### accuracy
 
 94.96%
 
-## combination #5
+### combination #5
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -86,13 +88,13 @@ Parameters:
 Number of Support Vectors:  9138
 ```
 
-### accuracy
+#### accuracy
 
 94.8%
 
-## combination #6
+### combination #6
 
-### parameters
+#### parameters
 
 ```txt
 # Run #5
@@ -104,13 +106,13 @@ print(tab5)
 print(sum(diag(tab5)))
 ```
 
-### accuracy
+#### accuracy
 
 100%
 
-## combination #7
+### combination #7
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -122,13 +124,13 @@ Parameters:
 Number of Support Vectors:  7034
 ```
 
-### accuracy
+#### accuracy
 
 97.4%
 
-## combination #8
+### combination #8
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -140,13 +142,13 @@ Parameters:
 Number of Support Vectors:  7314
 ```
 
-### accuracy
+#### accuracy
 
 97.5%
 
-## combination #9
+### combination #9
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -158,13 +160,13 @@ Parameters:
 Number of Support Vectors:  7940
 ```
 
-### accuracy
+#### accuracy
 
 98.9%
 
-## combination #10
+### combination #10
 
-### parameters
+#### parameters
 
 ```txt
 Parameters:
@@ -176,6 +178,118 @@ Parameters:
 Number of Support Vectors:  7897
 ```
 
-### accuracy
+#### accuracy
 
 99.9%
+
+## vowel
+
+### combination #1
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #2
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #3
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #4
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #5
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #6
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #7
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #8
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #9
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%
+
+### combination #10
+
+#### parameters
+
+```txt
+```
+
+#### accuracy
+
+%

@@ -189,55 +189,90 @@ Number of Support Vectors:  7897
 #### parameters
 
 ```txt
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  1 
+      gamma:  0.0625 
+
+Number of Support Vectors:  848
 ```
 
 #### accuracy
 
-%
+98.1%
 
 ### combination #2
 
 #### parameters
 
 ```txt
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  10 
+      gamma:  0.001 
+
+Number of Support Vectors:  959
 ```
 
 #### accuracy
 
-%
+74.2%
 
 ### combination #3
 
 #### parameters
 
 ```txt
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  5 
+      gamma:  0.01 
+
+Number of Support Vectors:  838
 ```
 
 #### accuracy
 
-%
+94.5%
 
 ### combination #4
 
 #### parameters
 
 ```txt
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  2 
+      gamma:  0.03 
+
+Number of Support Vectors:  823
 ```
 
 #### accuracy
 
-%
+97%
 
 ### combination #5
 
 #### parameters
 
 ```txt
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  4 
+      gamma:  0.02 
+
+Number of Support Vectors:  764
 ```
 
 #### accuracy
 
-%
+97.6%
 
 ### combination #6
 

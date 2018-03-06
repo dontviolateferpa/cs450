@@ -3,7 +3,7 @@ library(MASS)
 library(readr)
 library(caret)
 
-# Initialize letters
+# Initialize letter
 dataletters = read.csv("C:\\Users\\Zachary\\OneDrive\\Documents\\09 BYUI 2018 Winter (Override)\\CS 450 - Machine Learning and Data Mining\\cs450\\week08\\letters.csv")
 index <- 1:nrow(dataletters)
 testindex_letters <- sample(index, trunc(length(index)/3))
@@ -90,3 +90,4 @@ prediction10 <- predict(model10, testset_letters[,-1])
 tab10 <- table(pred = prediction10, true = testset_letters[,1])
 print(tab10)
 print(sum(diag(tab10)))
+

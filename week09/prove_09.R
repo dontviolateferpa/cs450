@@ -26,6 +26,6 @@ rules_04 <- apriori(Groceries, parameter = list(support = 0.001, confidence = 0.
 summary(rules_04)
 inspect(rules_04)
 
-rules_05 <- apriori(Groceries, parameter = list(support = 0.001))
+rules_05 <- apriori(Groceries, parameter = list(support = 0.01, confidence = 0.001))
 summary(rules_05)
-
+inspect(rules_05)

@@ -39,4 +39,10 @@
 ## 04 - The 5 rules you think are the most interesting
 
 ```text
+   lhs                                            rhs                support     confidence  lift        count
+   {rice,bottled water}                        => {whole milk}       0.001220132 0.923076923 3.6125991   12
+   {tropical fruit,dessert,whipped/sour cream} => {other vegetables} 0.001118454 0.916666667 4.737475915 11
+   {sausage,pip fruit,sliced cheese}           => {yogurt}           0.001220132 0.857142857 6.144314869 12
+   {tropical fruit,whole milk,butter,curd}     => {yogurt}           0.001220132 0.857142857 6.144314869 12
+   {rolls/buns}                                => {canned beer}      0.01128622  0.06135987  0.7898878   111
 ```

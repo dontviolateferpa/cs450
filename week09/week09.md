@@ -6,12 +6,12 @@
 
 ```text
     lhs                                                         rhs                support     confidence lift     count
-    {tropical fruit,herbs}                                   => {whole milk}       0.002338587 0.8214286  3.214783 23   
-    {herbs,rolls/buns}                                       => {whole milk}       0.002440264 0.8000000  3.130919 24   
-    {hamburger meat,curd}                                    => {whole milk}       0.002541942 0.8064516  3.156169 25   
-    {other vegetables,curd,domestic eggs}                    => {whole milk}       0.002846975 0.8235294  3.223005 28   
-    {citrus fruit,tropical fruit,root vegetables,whole milk} => {other vegetables} 0.003152008 0.8857143  4.577509 31   
-    {citrus fruit,root vegetables,other vegetables,yogurt}   => {whole milk}       0.002338587 0.8214286  3.214783 23 
+    {tropical fruit,herbs}                                   => {whole milk}       0.002338587 0.8214286  3.214783 23
+    {herbs,rolls/buns}                                       => {whole milk}       0.002440264 0.8000000  3.130919 24
+    {hamburger meat,curd}                                    => {whole milk}       0.002541942 0.8064516  3.156169 25
+    {other vegetables,curd,domestic eggs}                    => {whole milk}       0.002846975 0.8235294  3.223005 28
+    {citrus fruit,tropical fruit,root vegetables,whole milk} => {other vegetables} 0.003152008 0.8857143  4.577509 31
+    {citrus fruit,root vegetables,other vegetables,yogurt}   => {whole milk}       0.002338587 0.8214286  3.214783 23
 ```
 
 ## 02 - The 5 rules you can find with the highest confidence
@@ -34,4 +34,9 @@
    {tropical fruit,other vegetables,whole milk,yogurt,oil}    => {root vegetables}  0.001016777 0.909090909 8.340400271 10
    {citrus fruit,grapes,fruit/vegetable juice}                => {tropical fruit}   0.001118454 0.846153846 8.063878951 11
    {other vegetables,whole milk,yogurt,rice}                  => {root vegetables}  0.00132181  0.866666667 7.951181592 13
+```
+
+## 04 - The 5 rules you think are the most interesting
+
+```text
 ```

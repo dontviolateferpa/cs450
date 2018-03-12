@@ -22,8 +22,9 @@ write(rules_03,
       quote = TRUE,
       row.names = FALSE)
 
-rules_04 <- apriori(Groceries, parameter = list(support = 0.001))
+rules_04 <- apriori(Groceries, parameter = list(support = 0.001, confidence = 0.01))
 summary(rules_04)
+inspect(rules_04)
 
 rules_05 <- apriori(Groceries, parameter = list(support = 0.001))
 summary(rules_05)

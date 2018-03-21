@@ -41,7 +41,6 @@ def get_letter_dataset_numerical():
     return df
 
 def get_iris_dataset_numerical():
-    cols = COLS_IRIS
     df = read_csv(COLS_IRIS, "iris.csv")
 
     return df

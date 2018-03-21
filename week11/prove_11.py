@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 import pandas as pd
@@ -92,18 +93,22 @@ def main():
     ## Try at least 3 different "regular" learning algorithms and note the results.
     ### DS1 - chess
     ##### method 1 - MLP **
-    clf_chess_num_MLP = MLPClassifier(solver='lbfgs', alpha=1e-5,
-                                  hidden_layer_sizes=(40,30), random_state=1)
+    clf_chess_num_MLP = MLPClassifier(solver='adam', alpha=1e-5,
+                                      hidden_layer_sizes=(40,30), random_state=1)
     clf_chess_num_MLP.fit(chess_num_datatrain, chess_num_targettrain)
     predictions = clf_chess_num_MLP.predict(chess_num_datatest)
-    display_similarity(predictions, chess_num_targettest, "Neural Network on Chess Dataset")
+    display_similarity(predictions, chess_num_targettest, "Chess - Neural Network")
     ##### method 2 - Decision Tree
     clf_chess_num_DT = DecisionTreeClassifier(random_state=0)
     clf_chess_num_DT.fit(chess_num_datatrain, chess_num_targettrain)
     predictions = clf_chess_num_DT.predict(chess_num_datatest)
-    display_similarity(predictions, chess_num_targettest, "Decision Tree on Chess Dataset")
+    display_similarity(predictions, chess_num_targettest, "Chess - Decision Tree")
     ##### method 3
-    ### DS2
+    clf_chess_num_KN = KNeighborsClassifier(n_neighbors=7)
+    clf_chess_num_KN.fit(chess_num_datatrain, chess_num_targettrain)
+    predictions = clf_chess_num_KN.predict(chess_num_datatest)
+    display_similarity(predictions, chess_num_targettest, "Chess - KNN")
+    ### DS2 - iris
     ##### method 1
     ##### method 2
     ##### method 3

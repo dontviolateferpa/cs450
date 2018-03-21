@@ -1,4 +1,5 @@
-import sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 import numpy as np
 import pandas as pd
 
@@ -17,39 +18,58 @@ def read_csv(cols, filename):
 
 def get_chess_dataset_categorical():
     df = read_csv(COLS_CHESS, "week11\\chess.csv")
+    df_t = df["depth_of_win"]
+    df.drop(columns=["depth_of_win"], inplace=True)
 
-    return df
+    return df, df_t
 
 def get_letter_dataset_categorical():
     df = read_csv(COLS_LETTER, "week11\\letter.csv")
-
+    # UNFINISHED
     return df
 
 def get_iris_dataset_categorical():
     df = read_csv(COLS_IRIS, "week11\\iris.csv")
-
+    # UNFINISHED
     return df
 
 def get_chess_dataset_numerical():
     df = read_csv(COLS_CHESS, "week11\\chess.csv")
+    df_t = df["depth_of_win"]
+    df.drop(columns=["depth_of_win"], inplace=True)
 
-    return df
+    df["wk_file"] = df["wk_file"].astype('category').cat.codes
+    df["wr_file"] = df["wr_file"].astype('category').cat.codes
+    df["bk_file"] = df["bk_file"].astype('category').cat.codes    
+
+    return df, df_t
 
 def get_letter_dataset_numerical():
     df = read_csv(COLS_LETTER, "week11\\letter.csv")
-
+    # UNFINISHED
     return df
 
 def get_iris_dataset_numerical():
     df = read_csv(COLS_IRIS, "week11\\iris.csv")
-
+    # UNFINISHED
     return df
+
+def tts_chess_numeric():
+    """train test split the numeric version of the chess dataset"""
+    chess_num_d, chess_num_t= get_chess_dataset_numerical()
+    return train_test_split(chess_num_d, chess_num_t, test_size=0.3, random_state=3)
+
+def tts_chess_categorical():
+    """train test split the numeric version of the chess dataset"""
+    chess_cat_d, chess_cat_t= get_chess_dataset_categorical()
+    return train_test_split(chess_cat_d, chess_cat_t, test_size=0.3, random_state=3)
 
 def main():
     """magic happens here"""
     # preprocessing
-    df_iris_num = get_iris_dataset_numerical()
-    df_iris_cat = get_iris_dataset_categorical()
+    iris_num_d = get_iris_dataset_numerical()
+    iris_cat_d = get_iris_dataset_categorical()
+
     # For each dataset
 
     ## Try at least 3 different "regular" learning algorithms and note the results.

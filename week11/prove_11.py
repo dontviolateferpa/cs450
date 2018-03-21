@@ -7,23 +7,44 @@ COLS_IRIS   = ["sepal_len", "sepal_wid", "petal_len", "petal_wid", "class"]
 COLS_LETTER = ["letter", "x-box", "y-box", "wid-wid", "high-height", "onpix", "x-bar", "y-bar",
                "x2bar", "y2bar", "xybar", "x2ybr", "xy2br", "x-ege", "xegvy", "y-ege", "yegvx"]
 
+def read_csv(cols, filename):
+    return pd.io.parsers.read_csv(
+        filename,
+        header=None,
+        usecols=list(range(len(cols))),
+        names=cols
+    )
+
 def get_chess_dataset_categorical():
-    pass
+    df = read_csv(COLS_CHESS, "chess.csv")
+
+    return df
 
 def get_letter_dataset_categorical():
-    pass
+    df = read_csv(COLS_LETTER, "letter.csv")
+
+    return df
 
 def get_iris_dataset_categorical():
-    pass
+    df = read_csv(COLS_IRIS, "iris.csv")
+
+    return df
 
 def get_chess_dataset_numerical():
-    pass
+    df = read_csv(COLS_CHESS, "chess.csv")
+
+    return df
 
 def get_letter_dataset_numerical():
-    pass
+    df = read_csv(COLS_LETTER, "letter.csv")
+
+    return df
 
 def get_iris_dataset_numerical():
-    pass
+    cols = COLS_IRIS
+    df = read_csv(COLS_IRIS, "iris.csv")
+
+    return df
 
 def main():
     """magic happens here"""

@@ -9,6 +9,9 @@ __pycache__/
 # VS code
 .vscode/
 
+# Data
+*.csv
+
 # Distribution / packaging
 .Python
 build/

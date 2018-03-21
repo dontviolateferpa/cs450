@@ -16,39 +16,40 @@ def read_csv(cols, filename):
     )
 
 def get_chess_dataset_categorical():
-    df = read_csv(COLS_CHESS, "chess.csv")
+    df = read_csv(COLS_CHESS, "week11\\chess.csv")
 
     return df
 
 def get_letter_dataset_categorical():
-    df = read_csv(COLS_LETTER, "letter.csv")
+    df = read_csv(COLS_LETTER, "week11\\letter.csv")
 
     return df
 
 def get_iris_dataset_categorical():
-    df = read_csv(COLS_IRIS, "iris.csv")
+    df = read_csv(COLS_IRIS, "week11\\iris.csv")
 
     return df
 
 def get_chess_dataset_numerical():
-    df = read_csv(COLS_CHESS, "chess.csv")
+    df = read_csv(COLS_CHESS, "week11\\chess.csv")
 
     return df
 
 def get_letter_dataset_numerical():
-    df = read_csv(COLS_LETTER, "letter.csv")
+    df = read_csv(COLS_LETTER, "week11\\letter.csv")
 
     return df
 
 def get_iris_dataset_numerical():
-    df = read_csv(COLS_IRIS, "iris.csv")
+    df = read_csv(COLS_IRIS, "week11\\iris.csv")
 
     return df
 
 def main():
     """magic happens here"""
     # preprocessing
-
+    df_iris_num = get_iris_dataset_numerical()
+    df_iris_cat = get_iris_dataset_categorical()
     # For each dataset
 
     ## Try at least 3 different "regular" learning algorithms and note the results.

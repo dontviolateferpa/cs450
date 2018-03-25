@@ -183,8 +183,16 @@ def main():
     clf_letter_num_MLP.fit(letter_num_datatrain, letter_num_targettrain)
     predictions = clf_letter_num_MLP.predict(letter_num_datatest)
     display_similarity(predictions, letter_num_targettest, "Letter - Neural Network")
-    ##### method 2
-    ##### method 3
+    ##### method 2 - Decision Tree
+    clf_letter_num_DT = DecisionTreeClassifier()
+    clf_letter_num_DT.fit(letter_num_datatrain, letter_num_targettrain)
+    predictions = clf_letter_num_DT.predict(letter_num_datatest)
+    display_similarity(predictions, letter_num_targettest, "Letter - Decision Tree")
+    ##### method 3 - KNN
+    clf_letter_num_KNN = KNeighborsClassifier(n_neighbors=3)
+    clf_letter_num_KNN.fit(letter_num_datatrain, letter_num_targettrain)
+    predictions = clf_letter_num_KNN.predict(letter_num_datatest)
+    display_similarity(predictions, letter_num_targettest, "Letter - KNN")
 
     ## Use Bagging and note the results. (Play around with a few different options)
     ### DS1

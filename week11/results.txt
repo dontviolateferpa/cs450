@@ -22,3 +22,11 @@ BAGGING - Iris
 
 BAGGING - Letter
 	bootstrap=False
+		0.8796666666666667 accuracy
+
+	bootstrap=True
+		0.9270000000000000 accuracy
+
+	bootstrap=True
+	n_estimators=20
+		0.9293333333333333 accuracy**

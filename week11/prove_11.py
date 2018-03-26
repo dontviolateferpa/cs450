@@ -195,22 +195,22 @@ def main():
     # predictions = clf_letter_num_KNN.predict(letter_num_datatest)
     # display_similarity(predictions, letter_num_targettest, "Letter - KNN")
 
-    ## Use Bagging and note the results. (Play around with a few different options)
-    ### DS1 - Chess
-    clf_chess_num_Bagging = BaggingClassifier(bootstrap=True, n_estimators=20)
-    clf_chess_num_Bagging.fit(chess_num_datatrain, chess_num_targettrain)
-    predictions = clf_chess_num_Bagging.predict(chess_num_datatest)
-    display_similarity(predictions, chess_num_targettest, "BAGGING - Chess")
-    ### DS2 - Iris
-    clf_iris_num_Bagging = BaggingClassifier(bootstrap=True)
-    clf_iris_num_Bagging.fit(iris_num_datatrain, iris_num_targettrain)
-    predictions = clf_iris_num_Bagging.predict(iris_num_datatest)
-    display_similarity(predictions, iris_num_targettest, "BAGGING - Iris")
-    ### DS3 - Letter
-    clf_letter_num_Bagging = BaggingClassifier(bootstrap=False)
-    clf_letter_num_Bagging.fit(letter_num_datatrain, letter_num_targettrain)
-    predictions = clf_letter_num_Bagging.predict(letter_num_datatest)
-    display_similarity(predictions, letter_num_targettest, "BAGGING - Letter")
+    # ## Use Bagging and note the results. (Play around with a few different options)
+    # ### DS1 - Chess
+    # clf_chess_num_Bagging = BaggingClassifier(bootstrap=True, n_estimators=20)
+    # clf_chess_num_Bagging.fit(chess_num_datatrain, chess_num_targettrain)
+    # predictions = clf_chess_num_Bagging.predict(chess_num_datatest)
+    # display_similarity(predictions, chess_num_targettest, "BAGGING - Chess")
+    # ### DS2 - Iris
+    # clf_iris_num_Bagging = BaggingClassifier(bootstrap=True)
+    # clf_iris_num_Bagging.fit(iris_num_datatrain, iris_num_targettrain)
+    # predictions = clf_iris_num_Bagging.predict(iris_num_datatest)
+    # display_similarity(predictions, iris_num_targettest, "BAGGING - Iris")
+    # ### DS3 - Letter
+    # clf_letter_num_Bagging = BaggingClassifier(bootstrap=True, n_estimators=20)
+    # clf_letter_num_Bagging.fit(letter_num_datatrain, letter_num_targettrain)
+    # predictions = clf_letter_num_Bagging.predict(letter_num_datatest)
+    # display_similarity(predictions, letter_num_targettest, "BAGGING - Letter")
 
     ## Use AdaBoost and note the results. (Play around with a few different options)
     ### DS1 - Chess

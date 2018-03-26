@@ -61,3 +61,40 @@ ADABOOST - Letter
 
 	{'random_state': None, 'algorithm': 'SAMME.R', 'base_estimator': None, 'learning_rate': 1.0, 'n_estimators': 200}
 		0.2153333333333334 accuracy
+
+
+RANDOM FOREST - Chess
+	defaults
+		0.747415943923013 accuracy
+
+	criterion='entropy'
+		0.756326482119520 accuracy
+
+	criterion='entropy'
+	bootstrap=False
+		0.770464536057978 accuracy
+
+	criterion='entropy'
+	bootstrap=False
+	n_estimators=30
+		0.800879173102055 accuracy**
+	
+RANDOM FOREST - Iris
+	defaults
+		0.955555555555555 accuracy**
+
+	criterion='entropy'
+		0.955555555555555 accuracy
+
+	n_estimators=30
+		0.955555555555555 accuracy
+
+RANDOM FOREST - Letter
+	defaults
+		0.936666666666666 accuracy
+
+	criterion='entropy'
+		0.932333333333333 accuracy
+
+	bootstrap=False
+		0.945000000000000 accuracy**

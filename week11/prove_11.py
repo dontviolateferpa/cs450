@@ -239,13 +239,19 @@ def main():
 
     ## Use a random forest and note the results. (Play around with a few different options)
     ### DS1 - Chess
-    clf_chess_num_RandomForest = RandomForestClassifier()
+    clf_chess_num_RandomForest = RandomForestClassifier(criterion='entropy', bootstrap=False, n_estimators=30)
     clf_chess_num_RandomForest.fit(chess_num_datatrain, chess_num_targettrain)
     predictions = clf_chess_num_RandomForest.predict(chess_num_datatest)
     display_similarity(predictions, chess_num_targettest, "RANDOM FOREST - Chess")
-    params = clf_chess_num_RandomForest.get_params()
-    print(params)
     ### DS2 - Iris
+    clf_iris_num_RandomForest = RandomForestClassifier()
+    clf_iris_num_RandomForest.fit(iris_num_datatrain, iris_num_targettrain)
+    predictions = clf_iris_num_RandomForest.predict(iris_num_datatest)
+    display_similarity(predictions, iris_num_targettest, "RANDOM FOREST - Iris")
     ### DS3 - Letter
+    clf_letter_num_RandomForest = RandomForestClassifier(bootstrap=False)
+    clf_letter_num_RandomForest.fit(letter_num_datatrain, letter_num_targettrain)
+    predictions = clf_letter_num_RandomForest.predict(letter_num_datatest)
+    display_similarity(predictions, letter_num_targettest, "RANDOM FOREST - Letter")
 
 main()

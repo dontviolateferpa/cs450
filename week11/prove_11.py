@@ -196,6 +196,7 @@ def main():
     clf_letter_num_KNN.fit(letter_num_datatrain, letter_num_targettrain)
     predictions = clf_letter_num_KNN.predict(letter_num_datatest)
     display_similarity(predictions, letter_num_targettest, "Letter - KNN")
+    print("")
 
     ## Use Bagging and note the results. (Play around with a few different options)
     ### DS1 - Chess
@@ -213,6 +214,7 @@ def main():
     clf_letter_num_Bagging.fit(letter_num_datatrain, letter_num_targettrain)
     predictions = clf_letter_num_Bagging.predict(letter_num_datatest)
     display_similarity(predictions, letter_num_targettest, "BAGGING - Letter")
+    print("")
 
     ## Use AdaBoost and note the results. (Play around with a few different options)
     ### DS1 - Chess
@@ -236,6 +238,7 @@ def main():
     display_similarity(predictions, letter_num_targettest, "ADABOOST - Letter")
     params = clf_letter_num_AdaBoost.get_params()
     print(params)
+    print("")
 
     ## Use a random forest and note the results. (Play around with a few different options)
     ### DS1 - Chess

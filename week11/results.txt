@@ -1,0 +1,24 @@
+BAGGING - Chess
+	bootstrap=False
+		0.8087204467149816 accuracy
+
+	bootstrap=True
+		0.8320066532018534 accuracy
+
+	bootstrap=True
+	n_estimators=20
+		0.8411548057502674 accuracy**
+
+BAGGING - Iris
+	bootstrap=False
+		0.9555555555555556 accuracy
+
+	bootstrap=True
+		0.9777777777777777 accuracy**
+
+	bootstrap=True
+	n_estimators=20
+		0.9555555555555556 accuracy
+
+BAGGING - Letter
+	bootstrap=False

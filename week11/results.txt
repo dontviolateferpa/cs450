@@ -30,3 +30,34 @@ BAGGING - Letter
 	bootstrap=True
 	n_estimators=20
 		0.9293333333333333 accuracy**
+
+
+ADABOOST - Chess
+	{'learning_rate': 1.0, 'random_state': None, 'base_estimator': None, 'n_estimators': 50, 'algorithm': 'SAMME.R'}
+		0.2390400380182963 accuracy**
+
+	{'n_estimators': 200, 'algorithm': 'SAMME.R', 'learning_rate': 1.0, 'random_state': None, 'base_estimator': None}
+		0.2390400380182963 accuracy
+
+	{'algorithm': 'SAMME.R', 'random_state': None, 'learning_rate': 0.3, 'base_estimator': None, 'n_estimators': 200}
+		0.1653795889271712 accuracy
+
+	{'random_state': None, 'learning_rate': 2.0, 'base_estimator': None, 'algorithm': 'SAMME.R', 'n_estimators': 200}
+		0.1653795889271712 accuracy
+
+ADABOOST - Iris
+	{'algorithm': 'SAMME.R', 'learning_rate': 1.0, 'base_estimator': None, 'random_state': None, 'n_estimators': 50}
+		0.9555555555555556 accuracy**
+
+	{'algorithm': 'SAMME.R', 'n_estimators': 200, 'random_state': None, 'base_estimator': None, 'learning_rate': 1.0}
+		0.9333333333333333 accuracy
+
+	{'base_estimator': None, 'learning_rate': 0.3, 'random_state': None, 'algorithm': 'SAMME.R', 'n_estimators': 50}
+		0.9111111111111111 accuracy
+
+ADABOOST - Letter
+	{'learning_rate': 1.0, 'random_state': None, 'algorithm': 'SAMME.R', 'base_estimator': None, 'n_estimators': 50}
+		0.2846666666666666 accuracy**
+
+	{'random_state': None, 'algorithm': 'SAMME.R', 'base_estimator': None, 'learning_rate': 1.0, 'n_estimators': 200}
+		0.2153333333333334 accuracy

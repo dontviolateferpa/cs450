@@ -4,6 +4,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import pandas as pd
 import difflib
@@ -212,13 +214,37 @@ def main():
     # predictions = clf_letter_num_Bagging.predict(letter_num_datatest)
     # display_similarity(predictions, letter_num_targettest, "BAGGING - Letter")
 
-    ## Use AdaBoost and note the results. (Play around with a few different options)
-    ### DS1 - Chess
-    ### DS2 - Iris
-    ### DS3 - Letter
+    # ## Use AdaBoost and note the results. (Play around with a few different options)
+    # ### DS1 - Chess
+    # clf_chess_num_AdaBoost = AdaBoostClassifier()
+    # clf_chess_num_AdaBoost.fit(chess_num_datatrain, chess_num_targettrain)
+    # predictions = clf_chess_num_AdaBoost.predict(chess_num_datatest)
+    # display_similarity(predictions, chess_num_targettest, "ADABOOST - Chess")
+    # params = clf_chess_num_AdaBoost.get_params()
+    # print(params)
+    # ### DS2 - Iris
+    # clf_iris_num_AdaBoost = AdaBoostClassifier(learning_rate=0.3)
+    # clf_iris_num_AdaBoost.fit(iris_num_datatrain, iris_num_targettrain)
+    # predictions = clf_iris_num_AdaBoost.predict(iris_num_datatest)
+    # display_similarity(predictions, iris_num_targettest, "ADABOOST - Iris")
+    # params = clf_iris_num_AdaBoost.get_params()
+    # print(params)
+    # ### DS3 - Letter
+    # clf_letter_num_AdaBoost = AdaBoostClassifier(n_estimators=200)
+    # clf_letter_num_AdaBoost.fit(letter_num_datatrain, letter_num_targettrain)
+    # predictions = clf_letter_num_AdaBoost.predict(letter_num_datatest)
+    # display_similarity(predictions, letter_num_targettest, "ADABOOST - Letter")
+    # params = clf_letter_num_AdaBoost.get_params()
+    # print(params)
 
     ## Use a random forest and note the results. (Play around with a few different options)
     ### DS1 - Chess
+    clf_chess_num_RandomForest = RandomForestClassifier()
+    clf_chess_num_RandomForest.fit(chess_num_datatrain, chess_num_targettrain)
+    predictions = clf_chess_num_RandomForest.predict(chess_num_datatest)
+    display_similarity(predictions, chess_num_targettest, "RANDOM FOREST - Chess")
+    params = clf_chess_num_RandomForest.get_params()
+    print(params)
     ### DS2 - Iris
     ### DS3 - Letter
 
